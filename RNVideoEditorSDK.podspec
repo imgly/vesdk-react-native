@@ -1,0 +1,21 @@
+require 'json'
+
+package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
+Pod::Spec.new do |s|
+  s.name         = 'RNVideoEditorSDK'
+  s.version      = package['version']
+  s.summary      = package['description']
+  s.description  = package['description']
+  s.homepage     = package['homepage']
+  s.license      = { :type => package['license'], :file => package['licenseFilename'] }
+  s.author       = { package['author']['name'] => package['author']['email'] }
+  s.platform     = :ios, '9.0'
+  s.source       = { :git => package['repository']['url'], :tag => "#{s.version}" }
+  s.source_files = 'ios/**/*.{h,m,swift}'
+  s.requires_arc = true
+
+  s.dependency 'React'
+  s.dependency 'React-RCTImage'
+  s.dependency 'VideoEditorSDK', '10.3.0'
+end

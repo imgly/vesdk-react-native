@@ -1,0 +1,37 @@
+{
+  "name": "react-native-videoeditorsdk",
+  "title": "React Native module for the VideoEditor SDK",
+  "version": "1.0.0",
+  "description": "A React Native module for the VideoEditor SDK. Integrate the video editor into your own HTML5, iOS or Android app - in minutes!",
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imgly/vesdk-react-native.git"
+  },
+  "homepage": "https://www.videoeditorsdk.com",
+  "keywords": [
+    "react-native",
+    "video",
+    "video editor",
+    "videoeditor",
+    "videoeditorsdk",
+    "VideoEditor SDK",
+    "SDK",
+    "ios",
+    "android"
+  ],
+  "author": {
+    "name": "img.ly GmbH",
+    "email": "contact@img.ly"
+  },
+  "license": "MIT",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md",
+  "peerDependencies": {
+    "react-native": ">=0.60.0 <1.0.x"
+  }
+}

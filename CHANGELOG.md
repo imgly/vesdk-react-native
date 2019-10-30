@@ -1,3 +1,9 @@
+## [1.0.2]
+
+### Fixed
+
+* Fixed `unlockWithLicense`.
+
 ## [1.0.0]
 
 ### Added

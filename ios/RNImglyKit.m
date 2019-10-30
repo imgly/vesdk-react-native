@@ -177,7 +177,8 @@ NSString *const kExportTypeObject = @"object";
 {
   NSString *string = nil;
   NSURL *url = nil;
-  if ([json isKindOfClass:[NSString class]]) {
+  BOOL isString = [json isKindOfClass:[NSString class]];
+  if (isString) {
     string = json;
     @try { // NSURL has a history of crashing with bad input, so let's be safe
       url = [NSURL URLWithString:string];
@@ -187,10 +188,13 @@ NSString *const kExportTypeObject = @"object";
 
   // If the user specifies a file URL we do not use the converter and use the URL without any checks
   if (url == nil || !url.isFileURL) {
-    url = [RCTConvert NSURL:json];
-    // Test if the resulting URL is an existing local file otherwise we try to read the license from a string or a dictionary
-    if (![[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
-      url = nil;
+    // `RCTConvert` changed the conversion for json to URL and it throws now an error if it is not a string
+    if (isString) {
+      url = [RCTConvert NSURL:json];
+      // Test if the resulting URL is an existing local file otherwise we try to read the license from a string or a dictionary
+      if (![[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
+        url = nil;
+      }
     }
   }
 

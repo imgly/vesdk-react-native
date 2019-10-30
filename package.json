@@ -1,8 +1,8 @@
 {
   "name": "react-native-videoeditorsdk",
-  "title": "React Native module for the VideoEditor SDK",
-  "version": "1.0.0",
-  "description": "A React Native module for the VideoEditor SDK. Integrate the video editor into your own HTML5, iOS or Android app - in minutes!",
+  "title": "React Native module for VideoEditor SDK",
+  "version": "1.0.1",
+  "description": "A React Native module for VideoEditor SDK. Integrate the video editor into your own HTML5, iOS or Android app - in minutes!",
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {

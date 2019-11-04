@@ -19,7 +19,7 @@ RCT_EXPORT_MODULE();
     PESDKPhotoEditModel *photoEditModel = [[PESDKPhotoEditModel alloc] init];
 
     if (serializationData != nil) {
-      PESDKDeserializationResult *deserializationResult = [PESDKDeserializer deserializeWithData:serializationData imageDimensions:video.size];
+      PESDKDeserializationResult *deserializationResult = [PESDKDeserializer deserializeWithData:serializationData imageDimensions:video.size assetCatalog:configuration.assetCatalog];
       photoEditModel = deserializationResult.model ?: photoEditModel;
     }
 

@@ -1,3 +1,10 @@
+## [1.1.0]
+
+### Added
+
+* Updated VideoEditor SDK for iOS to version 10.4.0.
+* Added configuration options for personal stickers.
+
 ## [1.0.2]
 
 ### Fixed

@@ -1,7 +1,7 @@
 /**
  * An asset URI which will always be passed as a `string` to the native platform SDKs.
  * In React Native an `AssetURI` can be assigned with an asset reference which can be
- * optained by, e.g., `require('./pathToStaticAssetResource.withExtension')` as `number`.
+ * obtained by, e.g., `require('./pathToStaticAssetResource.withExtension')` as `number`.
  * Every `AssetURI` as `number` contained in the `Configuration` will be resolved to a URI
  * as `string` when passed to the SDK.
  */
@@ -12,9 +12,9 @@ export type AssetURI = string | number
  */
 export interface Configuration {
   /**
-   * When set to `true`, the user is forced to crop the asset to one of the allowed crop aspects in
+   * When set to `true`, the user is forced to crop the asset to one of the allowed crop ratios in
    * `transform.items` before being able to use other features of the editor.
-   * The transform tool will only be presented if the image does not already fit one of those allowed
+   * The transform tool will only be presented if the image does not already fit one of the allowed
    * aspect ratios. It will be presented automatically, if the user changes the orientation of the asset
    * and the result does not match an allowed aspect ratio.
    * 
@@ -77,8 +77,8 @@ export interface Configuration {
        */
       snapToVerticalCenter?: boolean;
       /**
-       * The left side of a sprite's bounding box snaps to a vertical line which is shifted by this value
-       * from the left side of the edited image towards its center. This value is measured in normalized
+       * The left side of a sprite's bounding box snaps to a vertical line which is shifted 
+       * from the left side of the edited image towards its center by this value. The value is measured in normalized
        * coordinates relative to the smaller side of the edited image.
        * If this value is explicitly set to `null` this snapping line is disabled.
        * @example // Defaults to:
@@ -86,8 +86,8 @@ export interface Configuration {
        */
       snapToLeft?: number | null;
       /**
-       * The right side of a sprite's bounding box snaps to a vertical line which is shifted by this value
-       * from the right side of the edited image towards its center. This value is measured in normalized
+       * The right side of a sprite's bounding box snaps to a vertical line which is shifted 
+       * from the right side of the edited image towards its center by this value. The value is measured in normalized
        * coordinates relative to the smaller side of the edited image.
        * If this value is explicitly set to `null` this snapping line is disabled.
        * @example // Defaults to:
@@ -95,8 +95,8 @@ export interface Configuration {
        */
       snapToRight?: number | null;
       /**
-       * The top side of a sprite's bounding box snaps to a horizontal line which is shifted by this value
-       * from the top side of the edited image towards its center. This value is measured in normalized
+       * The top side of a sprite's bounding box snaps to a horizontal line which is shifted 
+       * from the top side of the edited image towards its center by this value. The value is measured in normalized
        * coordinates relative to the smaller side of the edited image.
        * If this value is explicitly set to `null` this snapping line is disabled.
        * @example // Defaults to:
@@ -104,8 +104,8 @@ export interface Configuration {
        */
       snapToTop?: number | null;
       /**
-       * The bottom side of a sprite's bounding box snaps to a horizontal line which is shifted by this value
-       * from the bottom side of the edited image towards its center. This value is measured in normalized
+       * The bottom side of a sprite's bounding box snaps to a horizontal line which is shifted 
+       * from the bottom side of the edited image towards its center by this value. The value is measured in normalized
        * coordinates relative to the smaller side of the edited image.
        * If this value is explicitly set to `null` this snapping line is disabled.
        * @example // Defaults to:
@@ -152,7 +152,7 @@ export interface Configuration {
    */
   transform?: {
     /**
-     * Whether to show a reset button to reset the applied crop, rotation and straighten angle.
+     * Whether to show a reset button to reset the applied crop, rotation and tilt angle.
      * @example // Defaults to:
      * true
      */
@@ -182,7 +182,7 @@ export interface Configuration {
   filter?: {
     /**
      * Defines all available filters. Each filter must be assigned to a category.
-     * New items and categories can be mixed and matched with existing predefined ones.
+     * New items and categories can be mixed and matched with existing ones.
      * `NONE` is always added.
      * @example // Defaults to:
      * [
@@ -319,7 +319,7 @@ export interface Configuration {
   sticker?: {
     /**
      * Defines all available stickers. Each sticker must be assigned to a category.
-     * New items and categories can be mixed and matched with existing predefined ones.
+     * New items and categories can be mixed and matched with existing ones.
      * @example // Defaults to:
      * [
      *   { identifier: "imgly_sticker_category_emoticons", items: [
@@ -408,7 +408,7 @@ export interface Configuration {
      */
     categories?: (StickerCategory | ExistingStickerCategory)[];
     /**
-     * Defines all available colors that can be applied to stickers with a `tintMode` other than `none`.
+     * Defines all available colors that can be applied to stickers with a `tintMode` other than `TintMode.NONE`.
      * The color pipette is always added.
      * @example // Defaults to:
      * [
@@ -451,6 +451,21 @@ export interface Configuration {
       CanvasAction.ADD | 
       CanvasAction.FLIP
     >;
+    /**
+     * If enabled the user can create personal stickers from the device's photo library. A button is added as first item
+     * in the menu in front of the sticker categories which modally presents an image selection dialog for personal sticker creation.
+     * Personal stickers will be added to a personal sticker category with the identifier `"imgly_sticker_category_personal"` which
+     * will be added between the button and the regular sticker categories if it does not exist.
+     * @example // Defaults to:
+     * false
+     */
+    personalStickers?: boolean;
+    /**
+     * The default tint mode for personal stickers.
+     * @example // Defaults to:
+     * TintMode.NONE
+     */
+    defaultPersonalStickerTintMode?: TintMode;
   }
 
   /**
@@ -459,7 +474,7 @@ export interface Configuration {
   text?: {
     /**
      * Defines all available fonts.
-     * New items can be mixed and matched with existing predefined ones.
+     * New items can be mixed and matched with existing ones.
      * @example // Defaults to:
      * [
      *   { identifier: "imgly_font_open_sans_bold" },
@@ -561,7 +576,7 @@ export interface Configuration {
   textdesign?: {
     /**
      * Defines all available text designs.
-     * New items can be mixed and matched with existing predefined ones.
+     * New items can be mixed and matched with existing ones.
      * @example // Defaults to:
      * [
      *   { identifier: "imgly_text_design_blocks" },
@@ -626,7 +641,7 @@ export interface Configuration {
   overlay?: {
     /**
      * Defines all available overlays.
-     * New items can be mixed and matched with existing predefined ones.
+     * New items can be mixed and matched with existing ones.
      * `NONE` is always added.
      * @example // Defaults to:
      * [
@@ -653,7 +668,7 @@ export interface Configuration {
   frame?: {
     /**
      * Defines all available frames.
-     * New items can be mixed and matched with existing predefined ones.
+     * New items can be mixed and matched with existing ones.
      * `NONE` is always added.
      * @example // Defaults to:
      * [
@@ -724,21 +739,22 @@ export interface Configuration {
      */
     defaultColor?: Color;
     /**
-     * The minimum size that a brush can have. This value is measured relative to the
-     * smaller side of the image that the user is editing.
+     * The minimum size that a brush can have. This value is measured in relation to the
+     * smaller side of the image that the user is editing. If the value is `null` the
+     * minimum brush size is set to the absolute size of a single pixel of the edited image.
      * @example // Defaults to:
-     * 0.001
+     * null
      */
     minimumSize?: number;
     /**
-     * The maximum size that a brush can have. This value is measured relative to the
+     * The maximum size that a brush can have. This value is measured in relation to the
      * smaller side of the image that the user is editing.
      * @example // Defaults to:
      * 0.125
      */
     maximumSize?: number;
     /**
-     * The default size of the brush. This value is measured relative to the
+     * The default size of the brush. This value is measured in relation to the
      * smaller side of the image that the user is editing.
      * @example // Defaults to:
      * 0.05
@@ -881,8 +897,8 @@ export interface Configuration {
    */
   custom?: {
     /**
-     * Theming options to change the user interafce appearance. This allows to alter predefined existing
-     * theme presents or to create new themes which can be enabled when their corresponding key (name)
+     * Theming options to change the user interface appearance. This allows to alter predefined existing
+     * theme presets or to create new themes which can be enabled when their corresponding key (name)
      * is set as the `Configuration.theme`.
      */
     themes?: {
@@ -901,7 +917,7 @@ export enum Tool {
   FILTER = "filter",
   /** A tool to apply image adjustments. */
   ADJUSTMENT = "adjustment",
-  /** A tool to add defocus. */
+  /** A tool to add blur. */
   FOCUS = "focus",
   /** A tool to add stickers. */
   STICKER = "sticker",
@@ -913,7 +929,7 @@ export enum Tool {
   OVERLAY = "overlay",
   /** A tool to add a frame. */
   FRAME = "frame",
-  /** A tool to add paintings. */
+  /** A tool to add drawings. */
   BRUSH = "brush",
 }
 
@@ -969,7 +985,7 @@ export enum AdjustmentTool {
   SHARPNESS = "sharpness",
 }
 
-/** A focus tool. */
+/** A blur tool. */
 export enum FocusTool {
   NONE = "none",
   RADIAL = "radial",
@@ -1054,7 +1070,7 @@ export enum BrushAction {
   HARDNESS = "hardness",
 }
 
-/** A predefined existing theme preset to define the user interface appearance. */
+/** A predefined theme preset to define the user interface appearance. */
 export enum ExistingTheme {
   /** A user interface style with dark appearance. */
   DARK = "dark",
@@ -1079,7 +1095,7 @@ export type Color = number[] | number | string | null;
 export interface NamedColor {
   /** The color. */
   color: Color;
-  /** The name of the color which is also used for accessabliblity. */
+  /** The name of the color which is also used for accessibliblity. */
   name: string;
 }
 
@@ -1099,7 +1115,7 @@ export interface CropRatio {
    */
   toggleable?: boolean;
   /**
-   * A displayable name for the item which is also used for accessabliblity.
+   * A displayable name for the item which is also used for accessibliblity.
    * If `null` the name is automatically generated from the `width` and `height` values and
    * the name will always be overwritten by this auto-generated name if the user toggles the
    * aspect when `toggleable` is enabled.
@@ -1120,7 +1136,7 @@ export interface ExistingItem extends UniqueItem {}
 
 /** A named and unique identifiable item. */
 export interface NamedItem extends UniqueItem {
-  /** A displayable name for the item which is also used for accessabliblity. */
+  /** A displayable name for the item which is also used for accessibliblity. */
   name: string;
 }
 
@@ -1198,7 +1214,7 @@ export interface StickerCategory extends NamedItem {
 export interface Sticker extends NamedItem {
   /**
    * A URI for the thumbnail image of the sticker.
-   * If `null` the thumbnail will be automatically generated form the `stickerURI`.
+   * If `null` the thumbnail will be automatically generated from the `stickerURI`.
    * @example // Defaults to:
    * null
    */
@@ -1260,7 +1276,7 @@ export interface Frame extends NamedItem {
    * FrameLayoutMode.HORIZONTAL_INSIDE
    */
   layoutMode?: FrameLayoutMode;
-  /** The relative scale of the frame which is defined relative to the shorter side of the
+  /** The relative scale of the frame which is defined in relatation to the shorter side of the
    * resulting output image. */
   relativeScale: number;
   /** Images for the 12-patch layout of a dynamic frame that automatically adapts to
@@ -1329,28 +1345,28 @@ export interface FrameImageGroup {
 export interface Theme {
   /**
    * The tint color of highlighted user interface elements.
-   * If `null` it defaults to the system tint color if available or the vaule of the theme that is modified.
+   * If `null` it defaults to the system tint color if available or the value of the theme that is modified.
    * @example // Defaults to:
    * null
    */
   tint?: Color;
   /**
    * The primary color which is mainly used for the text and the icons on the menu bar.
-   * If `null` it defaults to the `ExistingTheme.DARK`'s value or the vaule of the theme that is modified.
+   * If `null` it defaults to the `ExistingTheme.DARK`'s value or the value of the theme that is modified.
    * @example // Defaults to:
    * null
    */
   primary?: Color;
   /**
    * The background color of the canvas.
-   * If `null` it defaults to the `ExistingTheme.DARK`'s value or the vaule of the theme that is modified.
+   * If `null` it defaults to the `ExistingTheme.DARK`'s value or the value of the theme that is modified.
    * @example // Defaults to:
    * null
    */
   background?: Color;
   /**
    * The background color of the menu and accesory controls above the menu.
-   * If `null` it defaults to the `ExistingTheme.DARK`'s value or the vaule of the theme that is modified.
+   * If `null` it defaults to the `ExistingTheme.DARK`'s value or the value of the theme that is modified.
    * @example // Defaults to:
    * null
    */
@@ -1358,7 +1374,7 @@ export interface Theme {
   /**
    * The background color of the toolbar that hosts the title of the active tool, the discard,
    * and the apply button.
-   * If `null` it defaults to the `ExistingTheme.DARK`'s value or the vaule of the theme that is modified.
+   * If `null` it defaults to the `ExistingTheme.DARK`'s value or the value of the theme that is modified.
    * @example // Defaults to:
    * null
    */
@@ -1602,6 +1618,8 @@ export function createDefaultConfiguration(): Configuration {
       ],
       actions: [StickerAction.REPLACE, StickerAction.OPACITY, StickerAction.COLOR],
       canvasActions: [CanvasAction.ADD, CanvasAction.DELETE, CanvasAction.FLIP, CanvasAction.BRING_TO_FRONT, CanvasAction.UNDO, CanvasAction.REDO],
+      personalStickers: false,
+      defaultPersonalStickerTintMode: TintMode.NONE,
     },
     text: {
       fonts: [

@@ -28,7 +28,7 @@ declare class VESDK {
   ): Promise<{image: string, hasChanges: boolean, serialization: object}>
 
   /**
-   * Unlock the VideoEditor SDK with a license.
+   * Unlock VideoEditor SDK with a license.
    * 
    * @param {string | object} license The license used to unlock the SDK. Can be either an URI
    * pointing to a local `file://` resource that contains the license, the license as a string,

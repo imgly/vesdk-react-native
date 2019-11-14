@@ -1,3 +1,9 @@
+## [1.2.0]
+
+### Changed
+
+* Updated VideoEditor SDK for iOS to version 10.5.0.
+
 ## [1.1.0]
 
 ### Added

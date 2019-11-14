@@ -1,5 +1,15 @@
 <p align="center">
-  <img src="https://video.photoeditorsdk.com/assets/img/vesdk-logo-s.svg" alt="VideoEditor SDK Logo"/>
+  <a href="https://www.videoeditorsdk.com/?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native">
+    <img src="https://video.photoeditorsdk.com/assets/img/vesdk-logo-s.svg" alt="VideoEditor SDK Logo"/>
+  </a>
+</p>
+<p align="center">
+  <a href="https://npmjs.org/package/react-native-videoeditorsdk">
+    <img src="https://img.shields.io/npm/v/react-native-videoeditorsdk.svg" alt="NPM version">
+  </a>
+  <a href="http://twitter.com/VideoEditorSDK">
+    <img src="https://img.shields.io/badge/twitter-@VideoEditorSDK-blue.svg?style=flat" alt="Twitter">
+  </a>
 </p>
 
 # React Native module for VideoEditor SDK
@@ -19,7 +29,7 @@ yarn react-native run-ios
 Import the module in your `App.js`:
 
 ```js
-import {Configuration, VESDK} from 'react-native-videoeditorsdk';
+import {VESDK, Configuration} from 'react-native-videoeditorsdk';
 ```
 
 Unlock VideoEditor SDK with a license file:
@@ -35,6 +45,10 @@ VESDK.openEditor(require('./video.mov'));
 ```
 
 Please see the [code documentation](./index.d.ts) for more details and additional [customization and configuration options](./configuration.ts).
+
+## Example
+
+Please see our [example project](https://github.com/imgly/vesdk-react-native-demo) which demonstrates how to use the React Native module for VideoEditor SDK.
 
 ## License Terms
 

@@ -1,3 +1,9 @@
+## [2.0.0]
+
+### Added
+
+* Added support for PhotoEditor SDK Android version 7.1.4 and above.
+
 ## [1.3.0]
 
 ### Changed

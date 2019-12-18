@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="ly.img.react_native.vesdk">
+    <application
+        android:largeHeap="true">
+        <provider
+            tools:replace="android:enabled"
+            android:authorities="${applicationId}.IMGLYAutoInit"
+            android:exported="false"
+            android:enabled="false"
+            android:name="ly.img.android.IMGLYAutoInit" />
+    </application>
+</manifest>
+  

@@ -7,10 +7,11 @@ function resolveStaticAsset(assetSource, extractURI = true) {
   const resolvedSource = Image.resolveAssetSource(assetSource);
   const source = (resolvedSource != null) ? resolvedSource : assetSource;
   if (extractURI) {
-    return (source.uri != null) ? source.uri : source;
+    return (source == null) ? null : ((source.uri != null) ? source.uri : source);
   }
-  return source
+  return source 
 }
+
 
 function getNestedObject(nestedObject, pathArray) {
   return pathArray.reduce((obj, key) =>
@@ -109,8 +110,12 @@ class VESDK {
    */
   static openEditor(videoSource, configuration = null, serialization = null) {
     resolveStaticAssets(configuration)
-    const video = resolveStaticAsset(videoSource, false);
-    return RNVideoEditorSDK.present(video, configuration, serialization);
+    const video = resolveStaticAsset(videoSource, Platform.OS == 'android');
+    if (Platform.OS == 'android') {
+      return RNVideoEditorSDK.present(video, configuration, serialization != null ? JSON.stringify(serialization) : null);
+    } else {
+      return RNVideoEditorSDK.present(video, configuration, serialization);
+    }
   }
 
   /**
@@ -124,7 +129,11 @@ class VESDK {
    * resolved by the packager.
    */
   static unlockWithLicense(license) {
-    RNVideoEditorSDK.unlockWithLicense(license);
+    if (Platform.OS == 'android') {
+      RNVideoEditorSDK.unlockWithLicense(JSON.stringify(license));
+    } else {
+      RNVideoEditorSDK.unlockWithLicense(license);
+    }
   }
 
   /**

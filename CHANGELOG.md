@@ -1,3 +1,9 @@
+## [2.0.1]
+
+### Fixed
+* Package size is to big
+* "tools: replace" attribute that is linked to the "provider" element type is not bound.
+
 ## [2.0.0]
 
 ### Added

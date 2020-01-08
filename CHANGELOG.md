@@ -1,42 +1,54 @@
+## [2.1.0]
+
+### Changed
+
+* [iOS] Updated VideoEditor SDK for iOS to version 10.7.0 and above.
+
+### Fixed
+
+* [iOS] Fixed automatic (CocoaPods) installation process so that VideoEditor SDK and PhotoEditor SDK can be used in the same project.
+* [iOS] Fixed `FRAMEWORK_SEARCH_PATHS` for manual linking VideoEditor SDK which is required for React Native versions older than 0.60.
+* Add missing `Platform` import when using React Native versions older than 0.60.
+
 ## [2.0.1]
 
 ### Fixed
-* Package size is to big
-* "tools: replace" attribute that is linked to the "provider" element type is not bound.
+
+* [Android] Fixed error message: "tools: replace" attribute that is linked to the "provider" element type is not bound.
 
 ## [2.0.0]
 
 ### Added
 
-* Added support for PhotoEditor SDK Android version 7.1.4 and above.
+* [Android] Added support for VideoEditor SDK for Android version 7.1.5 and above.
 
 ## [1.3.0]
 
 ### Changed
 
-* Updated VideoEditor SDK for iOS to version 10.6.0.
+* [iOS] Updated VideoEditor SDK for iOS to version 10.6.0.
 
 ## [1.2.0]
 
 ### Changed
 
-* Updated VideoEditor SDK for iOS to version 10.5.0.
+* [iOS] Updated VideoEditor SDK for iOS to version 10.5.0.
 
 ## [1.1.0]
 
 ### Added
 
-* Updated VideoEditor SDK for iOS to version 10.4.0.
+* [iOS] Updated VideoEditor SDK for iOS to version 10.4.0.
 * Added configuration options for personal stickers.
 
 ## [1.0.2]
 
 ### Fixed
 
-* Fixed `unlockWithLicense`.
+* [iOS] Fixed `unlockWithLicense`.
 
 ## [1.0.0]
 
 ### Added
 
-* Initial release of the React Native module for VideoEditor SDK. This version adds support for iOS only. Android support will be added in a later release.
+* [iOS] Initial release of the React Native module for VideoEditor SDK. This version adds support for iOS only. Android support will be added in a later release.

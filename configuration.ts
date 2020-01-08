@@ -17,7 +17,7 @@ export interface Configuration {
    * The transform tool will only be presented if the image does not already fit one of the allowed
    * aspect ratios. It will be presented automatically, if the user changes the orientation of the asset
    * and the result does not match an allowed aspect ratio.
-   * 
+   *
    * This property has no effect unless `transform.allowFreeCrop` is set to `false` or `null`.
    * @example // Defaults to:
    * false
@@ -77,7 +77,7 @@ export interface Configuration {
        */
       snapToVerticalCenter?: boolean;
       /**
-       * The left side of a sprite's bounding box snaps to a vertical line which is shifted 
+       * The left side of a sprite's bounding box snaps to a vertical line which is shifted
        * from the left side of the edited image towards its center by this value. The value is measured in normalized
        * coordinates relative to the smaller side of the edited image.
        * If this value is explicitly set to `null` this snapping line is disabled.
@@ -86,7 +86,7 @@ export interface Configuration {
        */
       snapToLeft?: number | null;
       /**
-       * The right side of a sprite's bounding box snaps to a vertical line which is shifted 
+       * The right side of a sprite's bounding box snaps to a vertical line which is shifted
        * from the right side of the edited image towards its center by this value. The value is measured in normalized
        * coordinates relative to the smaller side of the edited image.
        * If this value is explicitly set to `null` this snapping line is disabled.
@@ -95,7 +95,7 @@ export interface Configuration {
        */
       snapToRight?: number | null;
       /**
-       * The top side of a sprite's bounding box snaps to a horizontal line which is shifted 
+       * The top side of a sprite's bounding box snaps to a horizontal line which is shifted
        * from the top side of the edited image towards its center by this value. The value is measured in normalized
        * coordinates relative to the smaller side of the edited image.
        * If this value is explicitly set to `null` this snapping line is disabled.
@@ -104,7 +104,7 @@ export interface Configuration {
        */
       snapToTop?: number | null;
       /**
-       * The bottom side of a sprite's bounding box snaps to a horizontal line which is shifted 
+       * The bottom side of a sprite's bounding box snaps to a horizontal line which is shifted
        * from the bottom side of the edited image towards its center by this value. The value is measured in normalized
        * coordinates relative to the smaller side of the edited image.
        * If this value is explicitly set to `null` this snapping line is disabled.
@@ -446,9 +446,9 @@ export interface Configuration {
     canvasActions?: Array<
       CanvasAction.UNDO |
       CanvasAction.REDO |
-      CanvasAction.DELETE | 
-      CanvasAction.BRING_TO_FRONT | 
-      CanvasAction.ADD | 
+      CanvasAction.DELETE |
+      CanvasAction.BRING_TO_FRONT |
+      CanvasAction.ADD |
       CanvasAction.FLIP
     >;
     /**
@@ -535,7 +535,7 @@ export interface Configuration {
      *   { color: [0.80, 1.00, 0.40, 1], name: "Olive" },
      *   { color: [0.33, 1.00, 0.53, 1], name: "Green" },
      *   { color: [0.33, 1.00, 0.92, 1], name: "Aquamarin" },
-     * ] 
+     * ]
      */
     textColors?: ColorPalette;
     /**
@@ -630,7 +630,7 @@ export interface Configuration {
      *   { color: [0.80, 1.00, 0.40, 1], name: "Olive" },
      *   { color: [0.33, 1.00, 0.53, 1], name: "Green" },
      *   { color: [0.33, 1.00, 0.92, 1], name: "Aquamarin" },
-     * ] 
+     * ]
      */
     colors?: ColorPalette;
   }
@@ -789,7 +789,7 @@ export interface Configuration {
      */
     image?: {
       /**
-       * 
+       * The image export type.
        * @example // Defaults to:
        * ImageExportType.FILE_URL
        */
@@ -860,7 +860,7 @@ export interface Configuration {
        */
       enabled?: boolean;
       /**
-       * 
+       * The serialization export type.
        * @example // Defaults to:
        * SerializationExportType.FILE_URL
        */
@@ -887,6 +887,9 @@ export interface Configuration {
 
   /**
    * Defines the theme that should be used to style the user interface.
+   * @note This runtime theming configuration is currently not supported on Android.
+   * Please use the compile-time theming configuration instead:
+   * https://docs.photoeditorsdk.com/guides/android/v7_1/customization/themes#color-theming
    * @example // Defaults to:
    * ExistingTheme.DARK
    */
@@ -900,6 +903,9 @@ export interface Configuration {
      * Theming options to change the user interface appearance. This allows to alter predefined existing
      * theme presets or to create new themes which can be enabled when their corresponding key (name)
      * is set as the `Configuration.theme`.
+     * @note This runtime theming configuration is currently not supported on Android.
+     * Please use the compile-time theming configuration instead:
+     * https://docs.photoeditorsdk.com/guides/android/v7_1/customization/themes#color-theming
      */
     themes?: {
       [key: string]: Theme;
@@ -1128,7 +1134,7 @@ export interface CropRatio {
 /** A unique identifiable item. */
 export interface UniqueItem {
   /** A unqiue string that makes the item unique identifiable. */
-  identifier: string;  
+  identifier: string;
 }
 
 /** An existing item. */
@@ -1143,7 +1149,7 @@ export interface NamedItem extends UniqueItem {
 /** An existing filter category. */
 export interface ExistingFilterCategory extends ExistingItem {
   /**
-   * Items of the category which can be existing or new defined filters. 
+   * Items of the category which can be existing or new defined filters.
    * If `null` the referenced existing category will keep its predefined items.
    * @example // Defaults to:
    * null
@@ -1189,7 +1195,7 @@ export interface DuoToneFilter extends NamedItem {
 /** An existing sticker category. */
 export interface ExistingStickerCategory extends ExistingItem {
   /**
-   * Items of the category which can be existing or new defined stickers. 
+   * Items of the category which can be existing or new defined stickers.
    * If `null` the referenced existing category will keep its predefined items.
    * @example // Defaults to:
    * null

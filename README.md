@@ -14,93 +14,107 @@
 
 # React Native module for VideoEditor SDK
 
-## Prepare the Android project (this step is Android only)
-
-### 1. Because the Android Editor SDK implementation is quite large, there is a high chance that you will need to enable Multidex.
-#### 1.1. Open the android/app/build.gradle file (not android/build.gradle) and put these lines at the end of the file:
-```groovy
-android {
-    defaultConfig {
-        multiDexEnabled true
-    }
-}
-dependencies {
-  implementation 'androidx.multidex:multidex:2.0.1'
-}
-```
-####  1.2. You also need to change the _app/src/main/java/.../MainApplication.java_ file inside your project. 
-Change the `extends` of your `MainApplication` class from `Application` to `androidx.multidex.MultiDexApplication`.
-
-```java
-public class MainApplication extends androidx.multidex.MultiDexApplication implements ReactApplication { ...
-```
-
-For more information about what Multidex is, have a look here: https://developer.android.com/studio/build/multidex
-
-### 2. Add the img.ly Repository and Plugin. Open the _android/build.gradle_ file (not android/app/build.gradle) and add these lines at the top of the file:
-```groovy
-buildscript {
-    repositories {
-        jcenter()
-        maven { url "https://plugins.gradle.org/m2/" }
-        maven { url "https://artifactory.img.ly/artifactory/imgly" }
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
-        classpath 'ly.img.android.sdk:plugin:7.1.5'
-    }
-}
-```
-
-3. Open the `android/app/build.gradle`file  _(not android/build.gradle)_.
-And add these lines under `apply plugin: "com.android.application"`
-```groovy
-apply plugin: "com.android.application"
-
-apply plugin: 'ly.img.android.sdk'
-apply plugin: 'kotlin-android'
-
-// Comment out the modules you don't need, to save size.
-imglyConfig {
-    modules {
-        include 'ui:text'
-        include 'ui:focus'
-        include 'ui:frame'
-        include 'ui:brush'
-        include 'ui:filter'
-        include 'ui:sticker'
-        include 'ui:overlay'
-        include 'ui:transform'
-        include 'ui:adjustment'
-        include 'ui:text-design'
-        include 'ui:video-trim'
-
-        // This module is big, remove the serializer if you don't need that feature.
-        include 'backend:serializer'
-
-        // Remove the asset packs you don't need, these are also big in size.
-        include 'assets:font-basic'
-        include 'assets:frame-basic'
-        include 'assets:filter-basic'
-        include 'assets:overlay-basic'
-        include 'assets:sticker-shapes'
-        include 'assets:sticker-emoticons'
-    }
-}
-```
-
 ## Getting started
 
-Install the module with [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) as follows:
+Install the React Native module in your project as follows:
 
 ```sh
-# install
 yarn add react-native-videoeditorsdk
-cd ios && pod install && cd .. # CocoaPods on iOS needs this extra step
-# run
-yarn react-native run-ios
 ```
+
+### iOS
+
+For React Native 0.60 and above [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) is used and VideoEditor SDK for iOS should be automatically installed:
+
+```sh
+cd ios && pod install && cd ..
+```
+
+and updated:
+
+```sh
+cd ios && pod update && cd ..
+```
+
+with CocoaPods.
+
+For older React Native versions autolinking is not available and VideoEditor SDK for iOS needs to be [manually integrated](https://docs.videoeditorsdk.com/guides/ios/v10/introduction/getting_started#manually) in your Xcode project if you don't use [CocoaPods to manage your dependencies](https://facebook.github.io/react-native/docs/0.59/integration-with-existing-apps#configuring-cocoapods-dependencies). Make sure to put `ImglyKit.framework` and `VideoEditorSDK.framework` in the `ios/` directory of your project. Finally, [link the native dependencies](https://facebook.github.io/react-native/docs/0.59/linking-libraries-ios#step-2) with:
+
+```sh
+yarn react-native link
+```
+
+### Android
+
+1. Because VideoEditor SDK for Android is quite large, there is a high chance that you will need to enable [Multidex](https://developer.android.com/studio/build/multidex) for your project as follows:
+
+   1. Open the `android/app/build.gradle` file (**not** `android/build.gradle`) and add these lines at the end:
+      ```groovy
+      android {
+          defaultConfig {
+              multiDexEnabled true
+          }
+      }
+      dependencies {
+          implementation 'androidx.multidex:multidex:2.0.1'
+      }
+      ```
+   2. Open the `android/app/src/main/java/.../MainApplication.java` file and change the superclass of your `MainApplication` class from `Application` to `androidx.multidex.MultiDexApplication`, e.g.:
+      ```java
+      public class MainApplication extends androidx.multidex.MultiDexApplication implements ReactApplication {
+      ```
+
+2. Add the img.ly repository and plugin by opening the `android/build.gradle` file (**not** `android/app/build.gradle`) and adding these lines at the top:
+   ```groovy
+   buildscript {
+       repositories {
+           jcenter()
+           maven { url "https://plugins.gradle.org/m2/" }
+           maven { url "https://artifactory.img.ly/artifactory/imgly" }
+       }
+       dependencies {
+           classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
+           classpath 'ly.img.android.sdk:plugin:7.1.5'
+       }
+   }
+   ```
+   In order to update VideoEditor SDK for Android replace the version string `7.1.5` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+
+3. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file  (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
+   ```groovy
+   apply plugin: 'ly.img.android.sdk'
+   apply plugin: 'kotlin-android'
+
+   // Comment out the modules you don't need, to save size.
+   imglyConfig {
+       modules {
+           include 'ui:text'
+           include 'ui:focus'
+           include 'ui:frame'
+           include 'ui:brush'
+           include 'ui:filter'
+           include 'ui:sticker'
+           include 'ui:overlay'
+           include 'ui:transform'
+           include 'ui:adjustment'
+           include 'ui:text-design'
+           include 'ui:video-trim'
+
+           // This module is big, remove the serializer if you don't need that feature.
+           include 'backend:serializer'
+
+           // Remove the asset packs you don't need, these are also big in size.
+           include 'assets:font-basic'
+           include 'assets:frame-basic'
+           include 'assets:filter-basic'
+           include 'assets:overlay-basic'
+           include 'assets:sticker-shapes'
+           include 'assets:sticker-emoticons'
+       }
+   }
+   ```
+
+### Usage
 
 Import the module in your `App.js`:
 

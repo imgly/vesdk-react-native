@@ -1,4 +1,4 @@
-import {NativeModules, Image} from 'react-native';
+import {NativeModules, Image, Platform} from 'react-native';
 import {createDefaultConfiguration, Configuration} from './configuration';
 
 const {RNVideoEditorSDK} = NativeModules;
@@ -9,9 +9,8 @@ function resolveStaticAsset(assetSource, extractURI = true) {
   if (extractURI) {
     return (source == null) ? null : ((source.uri != null) ? source.uri : source);
   }
-  return source 
+  return source
 }
-
 
 function getNestedObject(nestedObject, pathArray) {
   return pathArray.reduce((obj, key) =>
@@ -22,7 +21,7 @@ function resolveNestedAsset(nestedObject, pathArray) {
   let asset = getNestedObject(nestedObject, pathArray);
   // Resolve `asset` if it is a number (opaque type returned by require('./foo.png'))
   if (asset && typeof asset === 'number') {
-    let key = pathArray.pop(); 
+    let key = pathArray.pop();
     let obj = getNestedObject(nestedObject, pathArray);
     obj[key] = resolveStaticAsset(asset);
   }
@@ -94,7 +93,7 @@ class VESDK {
    * fail! Remote video resources are currently supported for debugging purposes only, e.g., when
    * loading videos with `require('./video.mp4')` for debug builds static video assets will be
    * resolved to remote URLs served by the development packager.
-   * 
+   *
    * @param {string | {uri: string} | number} videoSource The source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
@@ -102,7 +101,7 @@ class VESDK {
    * @param {object} serialization The serialization used to initialize the editor. This
    * restores a previous state of the editor by re-applying all modifications to the loaded
    * video.
-   * 
+   *
    * @return {Promise<{video: string, hasChanges: boolean, serialization: object}>} Returns the
    * edited `video`, an indicator (`hasChanges`) whether the input video was modified at all, and
    * all modifications (`serialization`) applied to the input video if `export.serialization.enabled`
@@ -120,7 +119,7 @@ class VESDK {
 
   /**
    * Unlock VideoEditor SDK with a license.
-   * 
+   *
    * @param {string | object} license The license used to unlock the SDK. Can be either an URI
    * pointing to a local `file://` resource that contains the license, the license as a string,
    * or the license as an object which can be optained by, e.g., `require('./vesdk_license')`

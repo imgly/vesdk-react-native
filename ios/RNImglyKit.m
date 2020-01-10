@@ -1,27 +1,29 @@
 #import "RNImglyKit.h"
 #import "RNImglyKitSubclass.h"
 
-#define DEBUG_RN_IMGLY 0
+#define RN_IMGLY_DEBUG 0
 
-@implementation RNVESDKImglyKit
+@implementation RN_IMGLY_ImglyKit
 
-NSString *const kErrorUnableToUnlock = @"E_UNABLE_TO_UNLOCK";
-NSString *const kErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
-NSString *const kErrorUnableToExport = @"E_UNABLE_TO_EXPORT";
+const struct RN_IMGLY_Constants RN_IMGLY = {
+  .kErrorUnableToUnlock = @"E_UNABLE_TO_UNLOCK",
+  .kErrorUnableToLoad = @"E_UNABLE_TO_LOAD",
+  .kErrorUnableToExport = @"E_UNABLE_TO_EXPORT",
 
-NSString *const kExportTypeFileURL = @"file-url";
-NSString *const kExportTypeDataURL = @"data-url";
-NSString *const kExportTypeObject = @"object";
+  .kExportTypeFileURL = @"file-url",
+  .kExportTypeDataURL = @"data-url",
+  .kExportTypeObject = @"object"
+};
 
 - (void)dealloc {
-  [self dismiss:self.mediaEditViewController animated:NO];
+  [self dismiss:self.mediaEditViewController animated:NO completion:NULL];
 }
 
 - (void)present:(nonnull PESDKMediaEditViewControllerBlock)mediaEditViewController withUTI:(nonnull IMGLYUTIBlock)uti
   configuration:(nullable NSDictionary *)dictionary serialization:(nullable NSDictionary *)state
         resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject
 {
-#if DEBUG_RN_IMGLY
+#if RN_IMGLY_DEBUG
   {
     // For release debugging
     NSURL *debugURL = [RCTConvert IMGLYExportFileURL:@"imgly-debug" withExpectedUTI:kUTTypeJSON];
@@ -30,7 +32,7 @@ NSString *const kExportTypeObject = @"object";
       NSJSONWritingOptions debugOptions = NSJSONWritingPrettyPrinted;
       if (@available(iOS 11.0, *)) { debugOptions = debugOptions | NSJSONWritingSortedKeys; }
       NSData *debugData = [NSJSONSerialization dataWithJSONObject:dictionary options:debugOptions error:&error];
-      [debugData imgly_writeToURL:debugURL andCreateDirectoryIfNecessary:YES error:&error];
+      [debugData RN_IMGLY_writeToURL:debugURL andCreateDirectoryIfNecessary:YES error:&error];
       if (error != nil) {
         NSLog(@"Could not write debug configuration: %@", error);
       } else {
@@ -45,14 +47,14 @@ NSString *const kExportTypeObject = @"object";
   if (state != nil) {
     serializationData = [NSJSONSerialization dataWithJSONObject:state options:kNilOptions error:&error];
     if (error != nil) {
-      reject(kErrorUnableToLoad, [NSString imgly_string:@"Invalid serialization." withError:error], error);
+      reject(RN_IMGLY.kErrorUnableToLoad, [NSString RN_IMGLY_string:@"Invalid serialization." withError:error], error);
       return;
     }
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
     if (self.licenseError != nil) {
-      reject(kErrorUnableToUnlock, [NSString imgly_string:@"Unable to unlock with license." withError:self.licenseError], self.licenseError);
+      reject(RN_IMGLY.kErrorUnableToUnlock, [NSString RN_IMGLY_string:@"Unable to unlock with license." withError:self.licenseError], self.licenseError);
       return;
     }
 
@@ -63,32 +65,32 @@ NSString *const kExportTypeObject = @"object";
     }];
     if (error != nil) {
       RCTLogError(@"Error while decoding configuration: %@", error);
-      reject(kErrorUnableToLoad, [NSString imgly_string:@"Unable to load configuration." withError:error], error);
+      reject(RN_IMGLY.kErrorUnableToLoad, [NSString RN_IMGLY_string:@"Unable to load configuration." withError:error], error);
       return;
     }
 
     // Set default values if necessary
-    id valueExportType = [NSDictionary imgly_dictionary:dictionary valueForKeyPath:@"export.type" default:kExportTypeFileURL];
-    id valueExportFile = [NSDictionary imgly_dictionary:dictionary valueForKeyPath:@"export.filename" default:[NSString stringWithFormat:@"imgly-export/%@", [[NSUUID UUID] UUIDString]]];
-    id valueSerializationEnabled = [NSDictionary imgly_dictionary:dictionary valueForKeyPath:@"export.serialization.enabled" default:@(NO)];
-    id valueSerializationType = [NSDictionary imgly_dictionary:dictionary valueForKeyPath:@"export.serialization.exportType" default:kExportTypeFileURL];
-    id valueSerializationFile = [NSDictionary imgly_dictionary:dictionary valueForKeyPath:@"export.serialization.filename" default:valueExportFile];
-    id valueSerializationEmbedImage = [NSDictionary imgly_dictionary:dictionary valueForKeyPath:@"export.serialization.embedSourceImage" default:@(NO)];
+    id valueExportType = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.type" default:RN_IMGLY.kExportTypeFileURL];
+    id valueExportFile = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.filename" default:[NSString stringWithFormat:@"imgly-export/%@", [[NSUUID UUID] UUIDString]]];
+    id valueSerializationEnabled = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.enabled" default:@(NO)];
+    id valueSerializationType = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.exportType" default:RN_IMGLY.kExportTypeFileURL];
+    id valueSerializationFile = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.filename" default:valueExportFile];
+    id valueSerializationEmbedImage = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.embedSourceImage" default:@(NO)];
 
     NSString *exportType = [RCTConvert NSString:valueExportType];
-    NSURL *exportFile = [RCTConvert IMGLYExportFileURL:valueExportFile withExpectedUTI:uti(configuration)];
+    NSURL *exportFile = [RCTConvert RN_IMGLY_ExportFileURL:valueExportFile withExpectedUTI:uti(configuration)];
     BOOL serializationEnabled = [RCTConvert BOOL:valueSerializationEnabled];
     NSString *serializationType = [RCTConvert NSString:valueSerializationType];
-    NSURL *serializationFile = [RCTConvert IMGLYExportFileURL:valueSerializationFile withExpectedUTI:kUTTypeJSON];
+    NSURL *serializationFile = [RCTConvert RN_IMGLY_ExportFileURL:valueSerializationFile withExpectedUTI:kUTTypeJSON];
     BOOL serializationEmbedImage = [RCTConvert BOOL:valueSerializationEmbedImage];
 
     // Make sure that the export settings are valid
     if ((exportType == nil) ||
-        (exportFile == nil && [exportType isEqualToString:kExportTypeFileURL]) ||
-        (serializationFile == nil && [serializationType isEqualToString:kExportTypeFileURL]))
+        (exportFile == nil && [exportType isEqualToString:RN_IMGLY.kExportTypeFileURL]) ||
+        (serializationFile == nil && [serializationType isEqualToString:RN_IMGLY.kExportTypeFileURL]))
     {
       RCTLogError(@"Invalid export configuration");
-      reject(kErrorUnableToLoad, @"Invalid export configuration", nil);
+      reject(RN_IMGLY.kErrorUnableToLoad, @"Invalid export configuration", nil);
       return;
     }
 
@@ -101,7 +103,7 @@ NSString *const kExportTypeObject = @"object";
     }];
     if (error != nil) {
       RCTLogError(@"Error while updating configuration: %@", error);
-      reject(kErrorUnableToLoad, [NSString imgly_string:@"Unable to update configuration." withError:error], error);
+      reject(RN_IMGLY.kErrorUnableToLoad, [NSString RN_IMGLY_string:@"Unable to update configuration." withError:error], error);
       return;
     }
 
@@ -125,7 +127,7 @@ NSString *const kExportTypeObject = @"object";
   });
 }
 
-- (void)dismiss:(nonnull PESDKMediaEditViewController *)mediaEditViewController animated:(BOOL)animated
+- (void)dismiss:(nullable PESDKMediaEditViewController *)mediaEditViewController animated:(BOOL)animated completion:(nullable IMGLYCompletionBlock)completion
 {
   if (mediaEditViewController != self.mediaEditViewController) {
     RCTLogError(@"Unregistered %@", NSStringFromClass(mediaEditViewController.class));
@@ -142,7 +144,7 @@ NSString *const kExportTypeObject = @"object";
   self.mediaEditViewController = nil;
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    [mediaEditViewController.presentingViewController dismissViewControllerAnimated:animated completion:nil];
+    [mediaEditViewController.presentingViewController dismissViewControllerAnimated:animated completion:completion];
   });
 }
 
@@ -215,9 +217,9 @@ NSString *const kExportTypeObject = @"object";
 
 @end
 
-@implementation NSString (IMGLYStringWithError)
+@implementation NSString (RN_IMGLY_Category)
 
-+ (nonnull NSString *)imgly_string:(nonnull NSString *)message withError:(nullable NSError *)error
++ (nonnull NSString *)RN_IMGLY_string:(nonnull NSString *)message withError:(nullable NSError *)error
 {
   NSString *description = error.localizedDescription;
   if (description != nil) {
@@ -229,9 +231,9 @@ NSString *const kExportTypeObject = @"object";
 
 @end
 
-@implementation NSData (IMGLYCreateDirectoryOnWrite)
+@implementation NSData (RN_IMGLY_Category)
 
-- (BOOL)imgly_writeToURL:(nonnull NSURL *)fileURL andCreateDirectoryIfNecessary:(BOOL)createDirectory error:(NSError *_Nullable*_Nullable)error
+- (BOOL)RN_IMGLY_writeToURL:(nonnull NSURL *)fileURL andCreateDirectoryIfNecessary:(BOOL)createDirectory error:(NSError *_Nullable*_Nullable)error
 {
   if (createDirectory) {
     if (![[NSFileManager defaultManager] createDirectoryAtURL:fileURL.URLByDeletingLastPathComponent withIntermediateDirectories:YES attributes:nil error:error]) {
@@ -243,9 +245,9 @@ NSString *const kExportTypeObject = @"object";
 
 @end
 
-@implementation RCTConvert (IMGLYExportURLs)
+@implementation RCTConvert (RN_IMGLY_Category)
 
-+ (nullable IMGLYExportURL *)IMGLYExportURL:(nullable id)json
++ (nullable RN_IMGLY_ExportURL *)RN_IMGLY_ExportURL:(nullable id)json
 {
   // This code is identical to the implementation of
   // `+ (NSURL *)NSURL:(id)json`
@@ -299,12 +301,12 @@ NSString *const kExportTypeObject = @"object";
   }
 }
 
-+ (nullable IMGLYExportFileURL *)IMGLYExportFileURL:(nullable id)json withExpectedUTI:(nonnull CFStringRef)expectedUTI
++ (nullable RN_IMGLY_ExportFileURL *)RN_IMGLY_ExportFileURL:(nullable id)json withExpectedUTI:(nonnull CFStringRef)expectedUTI
 {
   // This code is similar to the implementation of
   // `+ (RCTFileURL *)RCTFileURL:(id)json`.
 
-  NSURL *fileURL = [self IMGLYExportURL:json];
+  NSURL *fileURL = [self RN_IMGLY_ExportURL:json];
   if (!fileURL.fileURL) {
     RCTLogError(@"URI must be a local file, '%@' isn't.", fileURL);
     return nil;
@@ -332,9 +334,9 @@ NSString *const kExportTypeObject = @"object";
 
 @end
 
-@implementation NSDictionary (IMGLYDefaultValueForKeyPath)
+@implementation NSDictionary (RN_IMGLY_Category)
 
-- (nullable id)imgly_valueForKeyPath:(nonnull NSString *)keyPath default:(nullable id)defaultValue
+- (nullable id)RN_IMGLY_valueForKeyPath:(nonnull NSString *)keyPath default:(nullable id)defaultValue
 {
   id value = [self valueForKeyPath:keyPath];
 
@@ -345,12 +347,12 @@ NSString *const kExportTypeObject = @"object";
   }
 }
 
-+ (nullable id)imgly_dictionary:(nullable NSDictionary *)dictionary valueForKeyPath:(nonnull NSString *)keyPath default:(nullable id)defaultValue
++ (nullable id)RN_IMGLY_dictionary:(nullable NSDictionary *)dictionary valueForKeyPath:(nonnull NSString *)keyPath default:(nullable id)defaultValue
 {
   if (dictionary == nil) {
     return defaultValue;
   }
-  return [dictionary imgly_valueForKeyPath:keyPath default:defaultValue];
+  return [dictionary RN_IMGLY_valueForKeyPath:keyPath default:defaultValue];
 }
 
 @end

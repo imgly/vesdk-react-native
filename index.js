@@ -105,7 +105,8 @@ class VESDK {
    * @return {Promise<{video: string, hasChanges: boolean, serialization: object}>} Returns the
    * edited `video`, an indicator (`hasChanges`) whether the input video was modified at all, and
    * all modifications (`serialization`) applied to the input video if `export.serialization.enabled`
-   * of the `configuration` was set.
+   * of the `configuration` was set. If the editor is dismissed without exporting the edited video
+   * `null` is returned instead.
    */
   static openEditor(videoSource, configuration = null, serialization = null) {
     resolveStaticAssets(configuration)

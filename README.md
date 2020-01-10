@@ -131,7 +131,7 @@ VESDK.unlockWithLicense(require('./vesdk_license'));
 Open the editor with a video:
 
 ```js
-VESDK.openEditor(require('./video.mov'));
+VESDK.openEditor(require('./video.mp4'));
 ```
 
 Please see the [code documentation](./index.d.ts) for more details and additional [customization and configuration options](./configuration.ts).

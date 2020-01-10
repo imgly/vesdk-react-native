@@ -78,7 +78,7 @@ RCT_EXPORT_METHOD(present:(nonnull NSURLRequest *)request
   // TODO: Handle React Native URLs from camera roll.
   if (request.URL.isFileURL) {
     if (![[NSFileManager defaultManager] fileExistsAtPath:request.URL.path]) {
-      reject(kErrorUnableToLoad, @"File does not exist", nil);
+      reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
       return;
     }
   }
@@ -95,32 +95,40 @@ RCT_EXPORT_METHOD(present:(nonnull NSURLRequest *)request
   if (self.serializationEnabled)
   {
     NSData *serializationData = [videoEditViewController serializedSettings];
-    if ([self.serializationType isEqualToString:kExportTypeFileURL]) {
-      if ([serializationData imgly_writeToURL:self.serializationFile andCreateDirectoryIfNecessary:YES error:&error]) {
+    if ([self.serializationType isEqualToString:RN_IMGLY.kExportTypeFileURL]) {
+      if ([serializationData RN_IMGLY_writeToURL:self.serializationFile andCreateDirectoryIfNecessary:YES error:&error]) {
         serialization = self.serializationFile.absoluteString;
       }
-    } else if ([self.serializationType isEqualToString:kExportTypeObject]) {
+    } else if ([self.serializationType isEqualToString:RN_IMGLY.kExportTypeObject]) {
       serialization = [NSJSONSerialization JSONObjectWithData:serializationData options:kNilOptions error:&error];
     }
   }
 
-  if (error == nil) {
-    self.resolve(@{ @"video": (url != nil) ? url.absoluteString : [NSNull null],
-                    @"hasChanges": @(videoEditViewController.hasChanges),
-                    @"serialization": (serialization != nil) ? serialization : [NSNull null] });
-  } else {
-    self.reject(kErrorUnableToExport, [NSString imgly_string:@"Unable to export video or serialization." withError:error], error);
-  }
-  [self dismiss:videoEditViewController animated:YES];
+  RCTPromiseResolveBlock resolve = self.resolve;
+  RCTPromiseRejectBlock reject = self.reject;
+  [self dismiss:videoEditViewController animated:YES completion:^{
+    if (error == nil) {
+      resolve(@{ @"video": (url != nil) ? url.absoluteString : [NSNull null],
+                 @"hasChanges": @(videoEditViewController.hasChanges),
+                 @"serialization": (serialization != nil) ? serialization : [NSNull null] });
+    } else {
+      reject(RN_IMGLY.kErrorUnableToExport, [NSString RN_IMGLY_string:@"Unable to export video or serialization." withError:error], error);
+    }
+  }];
 }
 
 - (void)videoEditViewControllerDidCancel:(nonnull PESDKVideoEditViewController *)videoEditViewController {
-  [self dismiss:videoEditViewController animated:YES];
+  RCTPromiseResolveBlock resolve = self.resolve;
+  [self dismiss:videoEditViewController animated:YES completion:^{
+    resolve([NSNull null]);
+  }];
 }
 
 - (void)videoEditViewControllerDidFailToGenerateVideo:(nonnull PESDKVideoEditViewController *)videoEditViewController {
-  self.reject(kErrorUnableToExport, @"Unable to generate video", nil);
-  [self dismiss:videoEditViewController animated:YES];
+  RCTPromiseRejectBlock reject = self.reject;
+  [self dismiss:videoEditViewController animated:YES completion:^{
+    reject(RN_IMGLY.kErrorUnableToExport, @"Unable to generate video", nil);
+  }];
 }
 
 @end

@@ -1161,7 +1161,7 @@ export interface ExistingFilterCategory extends ExistingItem {
 export interface FilterCategory extends NamedItem {
   /**
    * A URI for the thumbnail image of the category. If `null` the category will not have a thumbnail
-   * image which won't be required if `flattenCategories` is enabled for the `Tool.TRANSFORM`.
+   * image which won't be required if `flattenCategories` is enabled for the `Tool.FILTER`.
    * @example // Defaults to:
    * null
    */

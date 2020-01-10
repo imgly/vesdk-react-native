@@ -7,7 +7,7 @@ declare class VESDK {
    * fail! Remote video resources are currently supported for debugging purposes only, e.g., when
    * loading videos with `require('./video.mp4')` for debug builds static video assets will be
    * resolved to remote URLs served by the development packager.
-   * 
+   *
    * @param {string | {uri: string} | number} videoSource The source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
@@ -15,11 +15,12 @@ declare class VESDK {
    * @param {object} serialization The serialization used to initialize the editor. This
    * restores a previous state of the editor by re-applying all modifications to the loaded
    * video.
-   * 
+   *
    * @return {Promise<{video: string, hasChanges: boolean, serialization: object}>} Returns the
    * edited `video`, an indicator (`hasChanges`) whether the input video was modified at all, and
    * all modifications (`serialization`) applied to the input video if `export.serialization.enabled`
-   * of the `configuration` was set.
+   * of the `configuration` was set. If the editor is dismissed without exporting the edited video
+   * `null` is returned instead.
    */
   static openEditor(
     videoSource: string | {uri: string} | number,
@@ -29,7 +30,7 @@ declare class VESDK {
 
   /**
    * Unlock VideoEditor SDK with a license.
-   * 
+   *
    * @param {string | object} license The license used to unlock the SDK. Can be either an URI
    * pointing to a local `file://` resource that contains the license, the license as a string,
    * or the license as an object which can be optained by, e.g., `require('./vesdk_license')`

@@ -7,7 +7,31 @@
 
 @import ImglyKit;
 
-@interface RNVESDKImglyKit ()
+#define RN_IMGLY_Constants_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, Constants)
+#define RN_IMGLY_Constants RN_IMGLY_Constants_HELPER(RN_IMGLY)
+
+#define RN_IMGLY_Category_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, Category)
+#define RN_IMGLY_Category RN_IMGLY_Category_HELPER(RN_IMGLY)
+
+#define RN_IMGLY_string_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, _string)
+#define RN_IMGLY_string RN_IMGLY_string_HELPER(RN_IMGLY)
+
+#define RN_IMGLY_writeToURL_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, _writeToURL)
+#define RN_IMGLY_writeToURL RN_IMGLY_writeToURL_HELPER(RN_IMGLY)
+
+#define RN_IMGLY_ExportURL_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, ExportURL)
+#define RN_IMGLY_ExportURL RN_IMGLY_ExportURL_HELPER(RN_IMGLY)
+
+#define RN_IMGLY_ExportFileURL_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, ExportFileURL)
+#define RN_IMGLY_ExportFileURL RN_IMGLY_ExportFileURL_HELPER(RN_IMGLY)
+
+#define RN_IMGLY_valueForKeyPath_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, _valueForKeyPath)
+#define RN_IMGLY_valueForKeyPath RN_IMGLY_valueForKeyPath_HELPER(RN_IMGLY)
+
+#define RN_IMGLY_dictionary_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, _dictionary)
+#define RN_IMGLY_dictionary RN_IMGLY_dictionary_HELPER(RN_IMGLY)
+
+@interface RN_IMGLY_ImglyKit ()
 
 @property (strong, atomic, nullable) NSError* licenseError;
 @property (strong, atomic, nullable) NSString* exportType;
@@ -22,53 +46,57 @@
 
 typedef PESDKMediaEditViewController * _Nullable (^PESDKMediaEditViewControllerBlock)(PESDKConfiguration * _Nonnull configuration, NSData * _Nullable serializationData);
 typedef CFStringRef _Nonnull (^IMGLYUTIBlock)(PESDKConfiguration * _Nonnull configuration);
+typedef void (^IMGLYCompletionBlock)(void);
 
 - (void)present:(nonnull PESDKMediaEditViewControllerBlock)mediaEditViewController withUTI:(nonnull IMGLYUTIBlock)uti
   configuration:(nullable NSDictionary *)dictionary serialization:(nullable NSDictionary *)state
         resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject;
 
-- (void)dismiss:(nonnull PESDKMediaEditViewController *)mediaEditViewController animated:(BOOL)animated;
+- (void)dismiss:(nullable PESDKMediaEditViewController *)mediaEditViewController animated:(BOOL)animated completion:(nullable IMGLYCompletionBlock)completion;
 - (void)handleLicenseError:(nullable NSError *)error;
 - (void)unlockWithLicenseURL:(nonnull NSURL *)url;
 - (void)unlockWithLicenseString:(nonnull NSString *)string;
 - (void)unlockWithLicenseObject:(nonnull NSDictionary *)dictionary;
 - (void)unlockWithLicense:(nonnull id)json;
 
-extern NSString * _Nonnull const kErrorUnableToUnlock;
-extern NSString * _Nonnull const kErrorUnableToLoad;
-extern NSString * _Nonnull const kErrorUnableToExport;
+extern const struct RN_IMGLY_Constants
+{
+  NSString * _Nonnull const kErrorUnableToUnlock;
+  NSString * _Nonnull const kErrorUnableToLoad;
+  NSString * _Nonnull const kErrorUnableToExport;
 
-extern NSString * _Nonnull const kExportTypeFileURL;
-extern NSString * _Nonnull const kExportTypeDataURL;
-extern NSString * _Nonnull const kExportTypeObject;
-
-@end
-
-@interface NSString (IMGLYStringWithError)
-
-+ (nonnull NSString *)imgly_string:(nonnull NSString *)message withError:(nullable NSError *)error;
+  NSString * _Nonnull const kExportTypeFileURL;
+  NSString * _Nonnull const kExportTypeDataURL;
+  NSString * _Nonnull const kExportTypeObject;
+} RN_IMGLY;
 
 @end
 
-@interface NSData (IMGLYCreateDirectoryOnWrite)
+@interface NSString (RN_IMGLY_Category)
 
-- (BOOL)imgly_writeToURL:(nonnull NSURL *)fileURL andCreateDirectoryIfNecessary:(BOOL)createDirectory error:(NSError *_Nullable*_Nullable)error;
-
-@end
-
-@interface RCTConvert (IMGLYExportURLs)
-
-typedef NSURL IMGLYExportURL;
-typedef NSURL IMGLYExportFileURL;
-
-+ (nullable IMGLYExportURL *)IMGLYExportURL:(nullable id)json;
-+ (nullable IMGLYExportFileURL *)IMGLYExportFileURL:(nullable id)json withExpectedUTI:(nonnull CFStringRef)expectedUTI;
++ (nonnull NSString *)RN_IMGLY_string:(nonnull NSString *)message withError:(nullable NSError *)error;
 
 @end
 
-@interface NSDictionary (IMGLYDefaultValueForKeyPath)
+@interface NSData (RN_IMGLY_Category)
 
-- (nullable id)imgly_valueForKeyPath:(nonnull NSString *)keyPath default:(nullable id)defaultValue;
-+ (nullable id)imgly_dictionary:(nullable NSDictionary *)dictionary valueForKeyPath:(nonnull NSString *)keyPath default:(nullable id)defaultValue;
+- (BOOL)RN_IMGLY_writeToURL:(nonnull NSURL *)fileURL andCreateDirectoryIfNecessary:(BOOL)createDirectory error:(NSError *_Nullable*_Nullable)error;
+
+@end
+
+@interface RCTConvert (RN_IMGLY_Category)
+
+typedef NSURL RN_IMGLY_ExportURL;
+typedef NSURL RN_IMGLY_ExportFileURL;
+
++ (nullable RN_IMGLY_ExportURL *)RN_IMGLY_ExportURL:(nullable id)json;
++ (nullable RN_IMGLY_ExportFileURL *)RN_IMGLY_ExportFileURL:(nullable id)json withExpectedUTI:(nonnull CFStringRef)expectedUTI;
+
+@end
+
+@interface NSDictionary (RN_IMGLY_Category)
+
+- (nullable id)RN_IMGLY_valueForKeyPath:(nonnull NSString *)keyPath default:(nullable id)defaultValue;
++ (nullable id)RN_IMGLY_dictionary:(nullable NSDictionary *)dictionary valueForKeyPath:(nonnull NSString *)keyPath default:(nullable id)defaultValue;
 
 @end

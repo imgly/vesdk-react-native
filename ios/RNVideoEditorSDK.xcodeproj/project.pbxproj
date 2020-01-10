@@ -25,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNVideoEditorSDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNVideoEditorSDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D88A14523C876450056EEDA /* RNImgly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNImgly.h; sourceTree = "<group>"; };
 		3DDD535123686AF2002248D3 /* RNImglyKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNImglyKit.m; sourceTree = "<group>"; };
 		3DDD535223686AF2002248D3 /* RNImglyKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNImglyKit.h; sourceTree = "<group>"; };
 		3DDD535323686AF2002248D3 /* RNImglyKitSubclass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNImglyKitSubclass.h; sourceTree = "<group>"; };
@@ -54,6 +55,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				3D88A14523C876450056EEDA /* RNImgly.h */,
 				3DDD535223686AF2002248D3 /* RNImglyKit.h */,
 				3DDD535123686AF2002248D3 /* RNImglyKit.m */,
 				3DDD535323686AF2002248D3 /* RNImglyKitSubclass.h */,

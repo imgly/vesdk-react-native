@@ -1,3 +1,8 @@
+## [2.1.2]
+
+### Fixed
+* [Android] Fixed possible compile issue with React Native versions older than 0.60.
+
 ## [2.1.1]
 
 ### Fixed

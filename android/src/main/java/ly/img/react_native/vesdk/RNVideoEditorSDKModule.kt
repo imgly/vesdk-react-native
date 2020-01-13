@@ -29,7 +29,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
 
-class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener, PermissionListener  {
+class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener, PermissionListener {
     companion object {
         const val EDITOR_RESULT_ID = 1
     }
@@ -38,7 +38,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         reactContext.addActivityEventListener(this)
     }
 
-    private var currentSettingsList:VideoEditorSettingsList? = null
+    private var currentSettingsList: VideoEditorSettingsList? = null
     private var currentPromise: Promise? = null
     private var currentConfig: Configuration? = null
 
@@ -149,7 +149,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         }
     }
 
-    private fun checkPermissions() : Boolean {
+    private fun checkPermissions(): Boolean {
         (currentActivity as? PermissionAwareActivity)?.also {
             var haveAllPermissions = true
             for (permission in PermissionRequest.NEEDED_EDITOR_PERMISSIONS) {
@@ -195,15 +195,15 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         }
     }
 
-    operator fun WritableMap.set(id:String, value:Boolean) = this.putBoolean(id, value)
-    operator fun WritableMap.set(id:String, value:String?) = this.putString(id, value)
-    operator fun WritableMap.set(id:String, value:Double) = this.putDouble(id, value)
-    operator fun WritableMap.set(id:String, value:Float) = this.putDouble(id, value.toDouble())
-    operator fun WritableMap.set(id:String, value:ReadableArray?) = this.putArray(id, value)
-    operator fun WritableMap.set(id:String, value:Int) = this.putInt(id, value)
-    operator fun WritableMap.set(id:String, value:ReadableMap?) = this.putMap(id, value)
+    operator fun WritableMap.set(id: String, value: Boolean) = this.putBoolean(id, value)
+    operator fun WritableMap.set(id: String, value: String?) = this.putString(id, value)
+    operator fun WritableMap.set(id: String, value: Double) = this.putDouble(id, value)
+    operator fun WritableMap.set(id: String, value: Float) = this.putDouble(id, value.toDouble())
+    operator fun WritableMap.set(id: String, value: WritableArray?) = this.putArray(id, value)
+    operator fun WritableMap.set(id: String, value: Int) = this.putInt(id, value)
+    operator fun WritableMap.set(id: String, value: WritableMap?) = this.putMap(id, value)
 
-    fun reactMap(vararg pairs: Pair<String, Any?>) : WritableMap {
+    fun reactMap(vararg pairs: Pair<String, Any?>): WritableMap {
         val map = Arguments.createMap()
 
         for (pair in pairs) {
@@ -213,9 +213,9 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                 is Boolean -> map[id] = value
                 is Double -> map[id] = value
                 is Float -> map[id] = value
-                is Int  -> map[id] = value
-                is ReadableMap? -> map[id] = value
-                is ReadableArray? -> map[id] = value
+                is Int -> map[id] = value
+                is WritableMap? -> map[id] = value
+                is WritableArray? -> map[id] = value
                 else -> if (value == null) {
                     map.putNull(id)
                 } else {

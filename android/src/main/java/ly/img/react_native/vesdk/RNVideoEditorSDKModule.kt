@@ -31,7 +31,8 @@ import java.io.File
 
 class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener, PermissionListener {
     companion object {
-        const val EDITOR_RESULT_ID = 1
+        // This number must be unique. It is public to allow client code to change it if the same value is used elsewhere.
+        var EDITOR_RESULT_ID = 489313434 
     }
 
     init {
@@ -48,7 +49,8 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         IMGLY.authorize()
     }
 
-    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, resultData: Intent?) {
+        val data = resultData ?: return // If resultData is null the result is not from us.
         when (requestCode) {
             EDITOR_RESULT_ID -> {
                 when (resultCode) {

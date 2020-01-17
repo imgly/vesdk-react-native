@@ -74,11 +74,11 @@ yarn react-native link
        }
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
-           classpath 'ly.img.android.sdk:plugin:7.1.5'
+           classpath 'ly.img.android.sdk:plugin:7.1.7'
        }
    }
    ```
-   In order to update VideoEditor SDK for Android replace the version string `7.1.5` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   In order to update VideoEditor SDK for Android replace the version string `7.1.7` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 3. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file  (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
    ```groovy
@@ -135,6 +135,8 @@ VESDK.openEditor(require('./video.mp4'));
 ```
 
 Please see the [code documentation](./index.d.ts) for more details and additional [customization and configuration options](./configuration.ts).
+
+For configuring and customizing VideoEditor SDK beyond these options exposed to JavaScript the iOS bridge provides an [interface for native customization](./ios/RNVideoEditorSDK.h). Please refer to [our documentation](https://docs.videoeditorsdk.com?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native) for more details on native customization.
 
 ## Example
 

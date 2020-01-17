@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D36218D23D0BF1700C8329C /* RNImglyKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DDD535223686AF2002248D3 /* RNImglyKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D36218E23D0BF1C00C8329C /* RNVideoEditorSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E7B5881CC2AC0600A0062D /* RNVideoEditorSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3D36218F23D0BF2000C8329C /* RNImgly.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D88A14523C876450056EEDA /* RNImgly.h */; };
+		3D36219023D0BF2300C8329C /* RNImglyKitSubclass.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DDD535323686AF2002248D3 /* RNImglyKitSubclass.h */; };
+		3D36219123D0BFD800C8329C /* RNImglyKit.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DDD535223686AF2002248D3 /* RNImglyKit.h */; };
+		3D36219223D0BFD800C8329C /* RNVideoEditorSDK.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B3E7B5881CC2AC0600A0062D /* RNVideoEditorSDK.h */; };
 		3DDD535423686AF2002248D3 /* RNImglyKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DDD535123686AF2002248D3 /* RNImglyKit.m */; };
 		B3E7B58A1CC2AC0600A0062D /* RNVideoEditorSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNVideoEditorSDK.m */; };
 /* End PBXBuildFile section */
@@ -18,6 +24,8 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				3D36219123D0BFD800C8329C /* RNImglyKit.h in CopyFiles */,
+				3D36219223D0BFD800C8329C /* RNVideoEditorSDK.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,11 +75,26 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		3D36218C23D0BEF500C8329C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3D36218D23D0BF1700C8329C /* RNImglyKit.h in Headers */,
+				3D36218E23D0BF1C00C8329C /* RNVideoEditorSDK.h in Headers */,
+				3D36218F23D0BF2000C8329C /* RNImgly.h in Headers */,
+				3D36219023D0BF2300C8329C /* RNImglyKitSubclass.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		58B511DA1A9E6C8500147676 /* RNVideoEditorSDK */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNVideoEditorSDK" */;
 			buildPhases = (
+				3D36218C23D0BEF500C8329C /* Headers */,
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,

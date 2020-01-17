@@ -5,6 +5,16 @@
 
 @implementation RN_IMGLY_ImglyKit
 
+static IMGLYConfigurationBlock _configureWithBuilder = nil;
+
++ (IMGLYConfigurationBlock)configureWithBuilder {
+  return _configureWithBuilder;
+}
+
++ (void)setConfigureWithBuilder:(IMGLYConfigurationBlock)configurationBlock {
+  _configureWithBuilder = configurationBlock;
+}
+
 const struct RN_IMGLY_Constants RN_IMGLY = {
   .kErrorUnableToUnlock = @"E_UNABLE_TO_UNLOCK",
   .kErrorUnableToLoad = @"E_UNABLE_TO_LOAD",
@@ -19,7 +29,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
   [self dismiss:self.mediaEditViewController animated:NO completion:NULL];
 }
 
-- (void)present:(nonnull PESDKMediaEditViewControllerBlock)mediaEditViewController withUTI:(nonnull IMGLYUTIBlock)uti
+- (void)present:(nonnull IMGLYMediaEditViewControllerBlock)createMediaEditViewController withUTI:(nonnull IMGLYUTIBlock)getUTI
   configuration:(nullable NSDictionary *)dictionary serialization:(nullable NSDictionary *)state
         resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject
 {
@@ -78,7 +88,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     id valueSerializationEmbedImage = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.embedSourceImage" default:@(NO)];
 
     NSString *exportType = [RCTConvert NSString:valueExportType];
-    NSURL *exportFile = [RCTConvert RN_IMGLY_ExportFileURL:valueExportFile withExpectedUTI:uti(configuration)];
+    NSURL *exportFile = [RCTConvert RN_IMGLY_ExportFileURL:valueExportFile withExpectedUTI:getUTI(configuration)];
     BOOL serializationEnabled = [RCTConvert BOOL:valueSerializationEnabled];
     NSString *serializationType = [RCTConvert NSString:valueSerializationType];
     NSURL *serializationFile = [RCTConvert RN_IMGLY_ExportFileURL:valueSerializationFile withExpectedUTI:kUTTypeJSON];
@@ -100,6 +110,10 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     configuration = [[PESDKConfiguration alloc] initWithBuilder:^(PESDKConfigurationBuilder * _Nonnull builder) {
       builder.assetCatalog = assetCatalog;
       [builder configureFromDictionary:updatedDictionary error:&error];
+      IMGLYConfigurationBlock configureWithBuilder = RN_IMGLY_ImglyKit.configureWithBuilder;
+      if (configureWithBuilder != nil) {
+        configureWithBuilder(builder);
+      }
     }];
     if (error != nil) {
       RCTLogError(@"Error while updating configuration: %@", error);
@@ -107,8 +121,8 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
       return;
     }
 
-    PESDKMediaEditViewController *viewController = mediaEditViewController(configuration, serializationData);
-    if (viewController == nil) {
+    PESDKMediaEditViewController *mediaEditViewController = createMediaEditViewController(configuration, serializationData);
+    if (mediaEditViewController == nil) {
       return;
     }
 
@@ -120,7 +134,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     self.serializationEmbedImage = serializationEmbedImage;
     self.resolve = resolve;
     self.reject = reject;
-    self.mediaEditViewController = viewController;
+    self.mediaEditViewController = mediaEditViewController;
 
     UIViewController *currentViewController = RCTPresentedViewController();
     [currentViewController presentViewController:self.mediaEditViewController animated:YES completion:NULL];

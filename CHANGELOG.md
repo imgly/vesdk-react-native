@@ -1,6 +1,17 @@
+## [2.2.0]
+
+### Added
+
+* [iOS] Added an interface for native customization. Set the `RNVideoEditorSDK.configureWithBuilder` and `RNVideoEditorSDK.willPresentVideoEditViewController` properties of the bridge module to tweak VideoEditor SDK to your needs beyond the configuration options exposed to JavaScript.
+
+### Fixed
+
+* [Android] Fixed possible NPE if other native libraries register `addActivityEventListener()`.
+
 ## [2.1.2]
 
 ### Fixed
+
 * [Android] Fixed possible compile issue with React Native versions older than 0.60.
 
 ## [2.1.1]

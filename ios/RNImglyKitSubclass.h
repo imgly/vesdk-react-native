@@ -5,7 +5,12 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-@import ImglyKit;
+#import "RNImgly.h"
+
+#define RN_IMGLY_CONCATENATE(a,b) a ## b
+
+#define RN_IMGLY_ImglyKit_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, ImglyKit)
+#define RN_IMGLY_ImglyKit RN_IMGLY_ImglyKit_HELPER(RN_IMGLY)
 
 #define RN_IMGLY_Constants_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, Constants)
 #define RN_IMGLY_Constants RN_IMGLY_Constants_HELPER(RN_IMGLY)
@@ -31,7 +36,16 @@
 #define RN_IMGLY_dictionary_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, _dictionary)
 #define RN_IMGLY_dictionary RN_IMGLY_dictionary_HELPER(RN_IMGLY)
 
+@import ImglyKit;
+
 @interface RN_IMGLY_ImglyKit ()
+
+typedef void (^IMGLYConfigurationBlock)(PESDKConfigurationBuilder * _Nonnull builder);
+typedef PESDKMediaEditViewController * _Nullable (^IMGLYMediaEditViewControllerBlock)(PESDKConfiguration * _Nonnull configuration, NSData * _Nullable serializationData);
+typedef CFStringRef _Nonnull (^IMGLYUTIBlock)(PESDKConfiguration * _Nonnull configuration);
+typedef void (^IMGLYCompletionBlock)(void);
+
+@property (class, strong, atomic, nullable) IMGLYConfigurationBlock configureWithBuilder;
 
 @property (strong, atomic, nullable) NSError* licenseError;
 @property (strong, atomic, nullable) NSString* exportType;
@@ -44,11 +58,7 @@
 @property (strong, atomic, nullable) RCTPromiseRejectBlock reject;
 @property (strong, atomic, nullable) PESDKMediaEditViewController* mediaEditViewController;
 
-typedef PESDKMediaEditViewController * _Nullable (^PESDKMediaEditViewControllerBlock)(PESDKConfiguration * _Nonnull configuration, NSData * _Nullable serializationData);
-typedef CFStringRef _Nonnull (^IMGLYUTIBlock)(PESDKConfiguration * _Nonnull configuration);
-typedef void (^IMGLYCompletionBlock)(void);
-
-- (void)present:(nonnull PESDKMediaEditViewControllerBlock)mediaEditViewController withUTI:(nonnull IMGLYUTIBlock)uti
+- (void)present:(nonnull IMGLYMediaEditViewControllerBlock)createMediaEditViewController withUTI:(nonnull IMGLYUTIBlock)getUTI
   configuration:(nullable NSDictionary *)dictionary serialization:(nullable NSDictionary *)state
         resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject;
 

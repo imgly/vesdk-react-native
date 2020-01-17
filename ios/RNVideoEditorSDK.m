@@ -1,7 +1,6 @@
 #import "RNVideoEditorSDK.h"
+#import "RNImglyKit.h"
 #import "RNImglyKitSubclass.h"
-
-@import VideoEditorSDK;
 
 @interface RNVideoEditorSDK () <PESDKVideoEditViewControllerDelegate>
 
@@ -10,6 +9,24 @@
 @implementation RNVideoEditorSDK
 
 RCT_EXPORT_MODULE();
+
++ (RNVESDKConfigurationBlock)configureWithBuilder {
+  return RN_IMGLY_ImglyKit.configureWithBuilder;
+}
+
++ (void)setConfigureWithBuilder:(RNVESDKConfigurationBlock)configurationBlock {
+  RN_IMGLY_ImglyKit.configureWithBuilder = configurationBlock;
+}
+
+static RNVESDKWillPresentBlock _willPresentVideoEditViewController = nil;
+
++ (RNVESDKWillPresentBlock)willPresentVideoEditViewController {
+  return _willPresentVideoEditViewController;
+}
+
++ (void)setWillPresentVideoEditViewController:(RNVESDKWillPresentBlock)willPresentBlock {
+  _willPresentVideoEditViewController = willPresentBlock;
+}
 
 - (void)present:(nonnull PESDKVideo *)video withConfiguration:(nullable NSDictionary *)dictionary andSerialization:(nullable NSDictionary *)state
         resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
@@ -28,6 +45,10 @@ RCT_EXPORT_MODULE();
                                                                                                       photoEditModel:photoEditModel];
     videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     videoEditViewController.delegate = self;
+    RNVESDKWillPresentBlock willPresentVideoEditViewController = RNVideoEditorSDK.willPresentVideoEditViewController;
+    if (willPresentVideoEditViewController != nil) {
+      willPresentVideoEditViewController(videoEditViewController);
+    }
     return videoEditViewController;
 
   } withUTI:^CFStringRef _Nonnull(PESDKConfiguration * _Nonnull configuration) {

@@ -1,3 +1,10 @@
+## [2.2.1]
+
+### Fixed
+
+* [iOS] Fixed possible archive issue with React Native versions older than 0.60.
+* [Android] Fixed "Can only use lower 16 bits for requestCode" exception.
+
 ## [2.2.0]
 
 ### Added

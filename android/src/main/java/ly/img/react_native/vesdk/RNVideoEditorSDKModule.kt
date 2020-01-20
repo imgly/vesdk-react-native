@@ -32,7 +32,7 @@ import java.io.File
 class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener, PermissionListener {
     companion object {
         // This number must be unique. It is public to allow client code to change it if the same value is used elsewhere.
-        var EDITOR_RESULT_ID = 489313434 
+        var EDITOR_RESULT_ID = 29065
     }
 
     init {

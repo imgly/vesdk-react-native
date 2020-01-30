@@ -74,11 +74,11 @@ yarn react-native link
        }
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
-           classpath 'ly.img.android.sdk:plugin:7.1.7'
+           classpath 'ly.img.android.sdk:plugin:7.1.8'
        }
    }
    ```
-   In order to update VideoEditor SDK for Android replace the version string `7.1.7` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   In order to update VideoEditor SDK for Android replace the version string `7.1.8` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 3. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file  (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
    ```groovy

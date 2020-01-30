@@ -672,10 +672,10 @@ export interface Configuration {
      * `NONE` is always added.
      * @example // Defaults to:
      * [
+     *   { identifier: "imgly_frame_dia" },
      *   { identifier: "imgly_frame_art_decor" },
      *   { identifier: "imgly_frame_black_passepartout" },
      *   { identifier: "imgly_frame_wood_passepartout" },
-     *   { identifier: "imgly_frame_dia" },
      * ]
      */
     items?: (Frame | ExistingItem)[];
@@ -1736,10 +1736,10 @@ export function createDefaultConfiguration(): Configuration {
     },
     frame: {
       items: [
+        { identifier: "imgly_frame_dia" },
         { identifier: "imgly_frame_art_decor" },
         { identifier: "imgly_frame_black_passepartout" },
         { identifier: "imgly_frame_wood_passepartout" },
-        { identifier: "imgly_frame_dia" },
       ],
       actions: [FrameAction.REPLACE, FrameAction.WIDTH, FrameAction.OPACITY],
     },

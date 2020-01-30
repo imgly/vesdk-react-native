@@ -1,3 +1,9 @@
+## [2.2.2]
+
+### Fixed
+
+* Fixed default ordering of the frames for cross-platform consistency.
+
 ## [2.2.1]
 
 ### Fixed

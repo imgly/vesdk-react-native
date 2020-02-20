@@ -7,6 +7,9 @@
   <a href="https://npmjs.org/package/react-native-videoeditorsdk">
     <img src="https://img.shields.io/npm/v/react-native-videoeditorsdk.svg" alt="NPM version">
   </a>
+  <a href="https://npmjs.org/package/react-native-videoeditorsdk">
+    <img src="https://img.shields.io/badge/platforms-android%20|%20ios-lightgrey.svg" alt="Platform support">
+  </a>
   <a href="http://twitter.com/VideoEditorSDK">
     <img src="https://img.shields.io/badge/twitter-@VideoEditorSDK-blue.svg?style=flat" alt="Twitter">
   </a>
@@ -119,7 +122,7 @@ yarn react-native link
 Import the module in your `App.js`:
 
 ```js
-import {VESDK, Configuration} from 'react-native-videoeditorsdk';
+import {VESDK, VideoEditorModal, Configuration} from 'react-native-videoeditorsdk';
 ```
 
 Unlock VideoEditor SDK with a license file:
@@ -132,6 +135,12 @@ Open the editor with a video:
 
 ```js
 VESDK.openEditor(require('./video.mp4'));
+```
+
+Or use the component to open the editor:
+
+```jsx
+<VideoEditorModal visible={true} video={require('./video.mp4')}/>
 ```
 
 Please see the [code documentation](./index.d.ts) for more details and additional [customization and configuration options](./configuration.ts).

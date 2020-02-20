@@ -1,3 +1,9 @@
+## [2.3.0]
+
+### Added
+
+* Added `VideoEditorModal` component that can be used instead of the `VESDK.openEditor` function to modally present a video editor.
+
 ## [2.2.2]
 
 ### Fixed

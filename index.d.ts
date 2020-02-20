@@ -1,4 +1,5 @@
-import {Configuration} from './configuration';
+import { Component } from 'react';
+import { Configuration } from './configuration';
 
 declare class VESDK {
   /**
@@ -8,7 +9,7 @@ declare class VESDK {
    * loading videos with `require('./video.mp4')` for debug builds static video assets will be
    * resolved to remote URLs served by the development packager.
    *
-   * @param {string | {uri: string} | number} videoSource The source of the video to be edited.
+   * @param {string | {uri: string} | number} video The source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
    * @param {Configuration} configuration The configuration used to initialize the editor.
@@ -23,7 +24,7 @@ declare class VESDK {
    * `null` is returned instead.
    */
   static openEditor(
-    videoSource: string | {uri: string} | number,
+    video: string | {uri: string} | number,
     configuration: Configuration,
     serialization: object
   ): Promise<{image: string, hasChanges: boolean, serialization: object}>
@@ -50,5 +51,74 @@ declare class VESDK {
   ): Configuration
 }
 
-export {VESDK};
+/**
+ * Props for the `VideoEditorModal` component.
+ */
+interface VideoEditorModalProps {
+  /**
+   * This prop determines whether your modal is visible.
+   */
+  visible: boolean;
+
+  /**
+   * This prop determines the source of the video to be edited.
+   * Can be either an URI (local only), an object with a member `uri`, or an asset reference
+   * which can be optained by, e.g., `require('./video.mp4')` as `number`.
+   *
+   * @note Edited videos from remote resources can be previewed in the editor but their export will
+   * fail! Remote video resources are currently supported for debugging purposes only, e.g., when
+   * loading videos with `require('./video.mp4')` for debug builds static video assets will be
+   * resolved to remote URLs served by the development packager.
+   */
+  video: string | {uri: string} | number;
+
+  /**
+   * This prop determines the configuration used to initialize the editor.
+   */
+  configuration?: Configuration;
+
+  /**
+   * This prop determines the serialization used to initialize the editor. This
+   * restores a previous state of the editor by re-applying all modifications to the loaded
+   * video.
+   */
+  serialization?: object;
+
+  /**
+   * This prop determines the callback function that will be called when the user exported a video.
+   *
+   * The object passed to this callback includes the edited `video`, an indicator (`hasChanges`) whether
+   * the input video was modified at all, and all modifications (`serialization`) applied to the input video
+   * if `export.serialization.enabled` of the `configuration` prop was set.
+   */
+  onExport: ({video: string, hasChanges: boolean, serialization: object}) => void;
+
+  /**
+   * This prop determines the callback function that will be called when the user dissmisses the editor without
+   * exporting a video.
+   */
+  onCancel?: () => void;
+
+  /**
+   * This prop determines the callback function that will be called when an error occurs.
+   */
+  onError?: (error: Error) => void;
+}
+
+/**
+ * State for the `VideoEditorModal` component.
+ */
+interface VideoEditorModalState {
+  /**
+   * This state determines whether the modal is visible.
+   */
+  visible: boolean;
+}
+
+/**
+ * A component that wraps the `VESDK.openEditor` function to modally present a video editor.
+ */
+declare class VideoEditorModal extends Component<VideoEditorModalProps, VideoEditorModalState> {}
+
+export { VESDK, VideoEditorModal };
 export * from './configuration';

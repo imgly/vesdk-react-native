@@ -1,7 +1,8 @@
-import {NativeModules, Image, Platform} from 'react-native';
-import {createDefaultConfiguration, Configuration} from './configuration';
+import { Component } from 'react';
+import { NativeModules, Image, Platform } from 'react-native';
+import { Configuration, createDefaultConfiguration } from './configuration';
 
-const {RNVideoEditorSDK} = NativeModules;
+const { RNVideoEditorSDK } = NativeModules;
 
 function resolveStaticAsset(assetSource, extractURI = true) {
   const resolvedSource = Image.resolveAssetSource(assetSource);
@@ -94,7 +95,7 @@ class VESDK {
    * loading videos with `require('./video.mp4')` for debug builds static video assets will be
    * resolved to remote URLs served by the development packager.
    *
-   * @param {string | {uri: string} | number} videoSource The source of the video to be edited.
+   * @param {string | {uri: string} | number} video The source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
    * @param {Configuration} configuration The configuration used to initialize the editor.
@@ -108,13 +109,13 @@ class VESDK {
    * of the `configuration` was set. If the editor is dismissed without exporting the edited video
    * `null` is returned instead.
    */
-  static openEditor(videoSource, configuration = null, serialization = null) {
+  static openEditor(video, configuration = null, serialization = null) {
     resolveStaticAssets(configuration)
-    const video = resolveStaticAsset(videoSource, Platform.OS == 'android');
+    const source = resolveStaticAsset(video, Platform.OS == 'android');
     if (Platform.OS == 'android') {
-      return RNVideoEditorSDK.present(video, configuration, serialization != null ? JSON.stringify(serialization) : null);
+      return RNVideoEditorSDK.present(source, configuration, serialization != null ? JSON.stringify(serialization) : null);
     } else {
-      return RNVideoEditorSDK.present(video, configuration, serialization);
+      return RNVideoEditorSDK.present(source, configuration, serialization);
     }
   }
 
@@ -145,5 +146,36 @@ class VESDK {
   }
 }
 
-export {VESDK};
+class VideoEditorModal extends Component {
+  state = {
+    visible: false
+  }
+
+  static getDerivedStateFromProps = (props, state) => {
+    const { video, configuration, serialization, onExport, onCancel, onError } = props;
+    if (props.visible  && !state.visible) {
+      VESDK.openEditor(video, configuration, serialization).then(result => {
+        if (result !== null) {
+          onExport(result);
+        } else {
+          if (onCancel) {
+            onCancel();
+          }
+        }
+      }).catch((error) => {
+        if (onError) {
+          onError(error);
+        }
+      });
+    }
+
+    return ({ visible: props.visible })
+  }
+
+  render() {
+    return null;
+  }
+}
+
+export { VESDK, VideoEditorModal };
 export * from './configuration';

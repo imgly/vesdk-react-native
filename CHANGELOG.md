@@ -1,3 +1,9 @@
+## [2.3.1]
+
+### Fixed
+
+* Fixed and updated getting started section of the readme for React Native versions older than 0.60.
+
 ## [2.3.0]
 
 ### Added

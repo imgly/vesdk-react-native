@@ -25,6 +25,14 @@ Install the React Native module in your project as follows:
 yarn add react-native-videoeditorsdk
 ```
 
+In general, [we highly recommend using React Native 0.60 or newer](https://blog.photoeditorsdk.com/react-native-native-modules-made-for-react-developers-59ca93c41541). If you cannot avoid using an older React Native version you need to [link the native dependencies](https://facebook.github.io/react-native/docs/0.59/linking-libraries-ios#step-2) with:
+
+```sh
+yarn react-native link
+```
+
+before you continue with the platform-specific guides below.
+
 ### iOS
 
 For React Native 0.60 and above [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) is used and VideoEditor SDK for iOS should be automatically installed:
@@ -41,11 +49,7 @@ cd ios && pod update && cd ..
 
 with CocoaPods.
 
-For older React Native versions autolinking is not available and VideoEditor SDK for iOS needs to be [manually integrated](https://docs.videoeditorsdk.com/guides/ios/v10/introduction/getting_started#manually) in your Xcode project if you don't use [CocoaPods to manage your dependencies](https://facebook.github.io/react-native/docs/0.59/integration-with-existing-apps#configuring-cocoapods-dependencies). Make sure to put `ImglyKit.framework` and `VideoEditorSDK.framework` in the `ios/` directory of your project. Finally, [link the native dependencies](https://facebook.github.io/react-native/docs/0.59/linking-libraries-ios#step-2) with:
-
-```sh
-yarn react-native link
-```
+For older React Native versions autolinking is not available and VideoEditor SDK for iOS needs to be [manually integrated](https://docs.videoeditorsdk.com/guides/ios/v10/introduction/getting_started#manually) in your Xcode project if you don't use [CocoaPods to manage your dependencies](https://facebook.github.io/react-native/docs/0.59/integration-with-existing-apps#configuring-cocoapods-dependencies). Make sure to put `ImglyKit.framework` and `VideoEditorSDK.framework` in the `ios/` directory of your project.
 
 ### Android
 

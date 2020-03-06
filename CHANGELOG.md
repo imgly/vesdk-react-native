@@ -1,3 +1,9 @@
+## [2.3.2]
+
+### Fixed
+
+* [Android] Fixed loading of static resources for release builds.
+
 ## [2.3.1]
 
 ### Fixed

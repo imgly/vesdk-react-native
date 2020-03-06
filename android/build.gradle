@@ -20,6 +20,24 @@ imglyConfig {
     }
 }
 
+def MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION = "7.1.10"
+
+task checkVersion {
+    if (imglyConfig.convertToVersionNumber(imglyConfig.getVersion()) < imglyConfig.convertToVersionNumber(MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION)) {
+        String WRONG_VERSION = "" +
+            "┌───────────────────────────────────────────────────────────────────────┐\n"+
+            "│ VideoEditor SDK update required!                                      │\n"+
+            "│ Please update the plugin version in your 'android/build.gradle' file. │\n"+
+            "│ Minimum required dependency: 'ly.img.android.sdk:plugin:${MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION}'       │\n"+
+            "│ Your are currently using:    'ly.img.android.sdk:plugin:${imglyConfig.getVersion()}'       │\n"+
+            "└───────────────────────────────────────────────────────────────────────┘\n"
+
+        throw new GradleScriptException(WRONG_VERSION, new IllegalArgumentException(WRONG_VERSION))
+    }
+}
+
+preBuild.dependsOn checkVersion
+
 android {
     compileSdkVersion safeExtGet('compileSdkVersion', 29)
     buildToolsVersion safeExtGet('buildToolsVersion', '29.0.2')
@@ -47,4 +65,3 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'
     compileOnly "ly.img.android.sdk:serializer:$imglyConfig.version"
 }
-  

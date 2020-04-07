@@ -1182,6 +1182,18 @@ export type Filter = LUTFilter | DuoToneFilter;
 export interface LUTFilter extends NamedItem {
   /** A URI for the look up table (LUT) image. */
   lutURI: AssetURI;
+  /**
+   * The number of horizontal tiles in the LUT image.
+   * @example // Defaults to:
+   * 5
+   */
+  horizontalTileCount?: number;
+  /**
+   * The number of vertical tiles in the LUT image.
+   * @example // Defaults to:
+   * 5
+   */
+  verticalTileCount?: number;
 }
 
 /** A duotone image filter. */

@@ -1,3 +1,13 @@
+## [2.4.0]
+
+### Changed
+
+* [iOS] 🚨 `LUTFilter` tile configurations are not parsed from the `lutURI` filename anymore and the default changed from a 8x8 to a 5x5 tile configuration. Please use the newly added configuration options to configure the tile layout independent of the filename.
+
+### Added
+
+* Added tile configuration options for `LUTFilter`.
+
 ## [2.3.2]
 
 ### Fixed

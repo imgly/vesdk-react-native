@@ -1,3 +1,7 @@
+## [2.4.1]
+
+* Same version as 2.4.0. Bumped version to keep the version consistent with `react-native-photoeditorsdk`.
+
 ## [2.4.0]
 
 ### Changed

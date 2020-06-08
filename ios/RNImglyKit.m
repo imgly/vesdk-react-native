@@ -36,7 +36,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
 #if RN_IMGLY_DEBUG
   {
     // For release debugging
-    NSURL *debugURL = [RCTConvert IMGLYExportFileURL:@"imgly-debug" withExpectedUTI:kUTTypeJSON];
+    NSURL *debugURL = [RCTConvert RN_IMGLY_ExportFileURL:@"imgly-debug" withExpectedUTI:kUTTypeJSON];
     if (debugURL) {
       NSError *error = nil;
       NSJSONWritingOptions debugOptions = NSJSONWritingPrettyPrinted;
@@ -106,7 +106,10 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
 
     // Update configuration
     NSMutableDictionary *updatedDictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
-    [updatedDictionary setValue:exportFile.absoluteString forKeyPath:@"export.filename"];
+    NSMutableDictionary *exportDictionary = [NSMutableDictionary dictionaryWithDictionary:[NSDictionary RN_IMGLY_dictionary:updatedDictionary valueForKeyPath:@"export" default:@{}]];
+    [exportDictionary setValue:exportFile.absoluteString forKeyPath:@"filename"];
+    [updatedDictionary setValue:exportDictionary forKeyPath:@"export"];
+
     configuration = [[PESDKConfiguration alloc] initWithBuilder:^(PESDKConfigurationBuilder * _Nonnull builder) {
       builder.assetCatalog = assetCatalog;
       [builder configureFromDictionary:updatedDictionary error:&error];

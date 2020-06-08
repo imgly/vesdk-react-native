@@ -1,3 +1,11 @@
+## [2.4.2]
+
+### Fixed
+
+* [Android] Fixed serialization export file URL to include the schema.
+* [Android] Fixed crash when exporting serialization for remote videos.
+* [Android] 🚨 Fixed export result type to `video` which was `image` before.
+
 ## [2.4.1]
 
 * Same version as 2.4.0. Bumped version to keep the version consistent with `react-native-photoeditorsdk`.

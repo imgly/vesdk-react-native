@@ -1,6 +1,18 @@
 import { Component } from 'react';
 import { Configuration } from './configuration';
 
+/**
+ * The result of an export.
+ */
+interface VideoEditorResult {
+  /** The edited video. */
+  video: string;
+  /** An indicator whether the input video was modified at all. */
+  hasChanges: boolean;
+  /** All modifications applied to the input video if `export.serialization.enabled` of the `Configuration` was set to `true`. */
+  serialization?: string | object;
+}
+
 declare class VESDK {
   /**
    * Modally present a video editor.
@@ -17,17 +29,14 @@ declare class VESDK {
    * restores a previous state of the editor by re-applying all modifications to the loaded
    * video.
    *
-   * @return {Promise<{video: string, hasChanges: boolean, serialization: object}>} Returns the
-   * edited `video`, an indicator (`hasChanges`) whether the input video was modified at all, and
-   * all modifications (`serialization`) applied to the input video if `export.serialization.enabled`
-   * of the `configuration` was set. If the editor is dismissed without exporting the edited video
-   * `null` is returned instead.
+   * @return {Promise<VideoEditorResult>} Returns a `VideoEditorResult` or `null` if the editor
+   * is dismissed without exporting the edited video.
    */
   static openEditor(
     video: string | {uri: string} | number,
-    configuration: Configuration,
-    serialization: object
-  ): Promise<{image: string, hasChanges: boolean, serialization: object}>
+    configuration?: Configuration,
+    serialization?: object
+  ): Promise<VideoEditorResult>
 
   /**
    * Unlock VideoEditor SDK with a license.
@@ -86,15 +95,11 @@ interface VideoEditorModalProps {
 
   /**
    * This prop determines the callback function that will be called when the user exported a video.
-   *
-   * The object passed to this callback includes the edited `video`, an indicator (`hasChanges`) whether
-   * the input video was modified at all, and all modifications (`serialization`) applied to the input video
-   * if `export.serialization.enabled` of the `configuration` prop was set.
    */
-  onExport: ({video: string, hasChanges: boolean, serialization: object}) => void;
+  onExport: (args: VideoEditorResult) => void;
 
   /**
-   * This prop determines the callback function that will be called when the user dissmisses the editor without
+   * This prop determines the callback function that will be called when the user dismisses the editor without
    * exporting a video.
    */
   onCancel?: () => void;

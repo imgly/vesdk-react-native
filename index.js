@@ -103,11 +103,8 @@ class VESDK {
    * restores a previous state of the editor by re-applying all modifications to the loaded
    * video.
    *
-   * @return {Promise<{video: string, hasChanges: boolean, serialization: object}>} Returns the
-   * edited `video`, an indicator (`hasChanges`) whether the input video was modified at all, and
-   * all modifications (`serialization`) applied to the input video if `export.serialization.enabled`
-   * of the `configuration` was set. If the editor is dismissed without exporting the edited video
-   * `null` is returned instead.
+   * @return {Promise<VideoEditorResult>} Returns a `VideoEditorResult` or `null` if the editor
+   * is dismissed without exporting the edited video.
    */
   static openEditor(video, configuration = null, serialization = null) {
     resolveStaticAssets(configuration)

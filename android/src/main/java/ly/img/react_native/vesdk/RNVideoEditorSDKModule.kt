@@ -20,6 +20,7 @@ import ly.img.android.pesdk.ui.activity.ImgLyIntent
 import ly.img.android.pesdk.ui.activity.VideoEditorBuilder
 import ly.img.android.pesdk.ui.utils.PermissionRequest
 import ly.img.android.pesdk.utils.MainThreadRunnable
+import ly.img.android.pesdk.utils.SequenceRunnable
 import ly.img.android.pesdk.utils.UriHelper
 import ly.img.android.sdk.config.*
 import ly.img.android.serializer._3._0._0.PESDKFileReader
@@ -28,6 +29,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
+
 
 class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener, PermissionListener {
     companion object {
@@ -58,49 +60,51 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                         currentPromise?.resolve(null)
                     }
                     Activity.RESULT_OK -> {
-                        val sourcePath = data.getParcelableExtra<Uri>(ImgLyIntent.SOURCE_IMAGE_URI)
-                        val resultPath = data.getParcelableExtra<Uri>(ImgLyIntent.RESULT_IMAGE_URI)
+                        SequenceRunnable("Export Done") {
+                            val sourcePath = data.getParcelableExtra<Uri>(ImgLyIntent.SOURCE_IMAGE_URI)
+                            val resultPath = data.getParcelableExtra<Uri>(ImgLyIntent.RESULT_IMAGE_URI)
 
-                        val serializationConfig = currentConfig?.export?.serialization
-                        val settingsList = data.getParcelableExtra<SettingsList>(ImgLyIntent.SETTINGS_LIST)
+                            val serializationConfig = currentConfig?.export?.serialization
+                            val settingsList = data.getParcelableExtra<SettingsList>(ImgLyIntent.SETTINGS_LIST)
 
-                        val serialization: Any? = if (serializationConfig?.enabled == true) {
-                            skipIfNotExists {
-                                settingsList.let { settingsList ->
-                                    if (serializationConfig.embedSourceImage == true) {
-                                        Log.i("ImgLySdk", "EmbedSourceImage is currently not supported by the Android SDK")
-                                    }
-                                    when (serializationConfig.exportType) {
-                                        SerializationExportType.FILE_URL -> {
-                                            val file = serializationConfig.filename?.let { Export.convertPathToFile(it) }
-                                              ?: File.createTempFile("serialization", ".json")
-                                            PESDKFileWriter(settingsList).writeJson(file)
-                                            file.absolutePath
+                            val serialization: Any? = if (serializationConfig?.enabled == true) {
+                                skipIfNotExists {
+                                    settingsList.let { settingsList ->
+                                        if (serializationConfig.embedSourceImage == true) {
+                                            Log.i("ImgLySdk", "EmbedSourceImage is currently not supported by the Android SDK")
                                         }
-                                        SerializationExportType.OBJECT -> {
-                                            ReactJSON.convertJsonToMap(
-                                              JSONObject(
-                                                PESDKFileWriter(settingsList).writeJsonAsString()
-                                              )
-                                            ) as Any?
+                                        when (serializationConfig.exportType) {
+                                            SerializationExportType.FILE_URL -> {
+                                                val file = serializationConfig.filename?.let { Export.convertPathToFile(it) }
+                                                  ?: File.createTempFile("serialization", ".json")
+                                                PESDKFileWriter(settingsList).writeJson(file)
+                                                Uri.fromFile(file).toString()
+                                            }
+                                            SerializationExportType.OBJECT -> {
+                                                ReactJSON.convertJsonToMap(
+                                                  JSONObject(
+                                                    PESDKFileWriter(settingsList).writeJsonAsString()
+                                                  )
+                                                ) as Any?
+                                            }
                                         }
                                     }
+                                } ?: run {
+                                    Log.i("ImgLySdk", "You need to include 'backend:serializer' Module, to use serialisation!")
+                                    null
                                 }
-                            } ?: run {
-                                Log.i("ImgLySdk", "You need to include 'backend:serializer' Module, to use serialisation!")
+                            } else {
                                 null
                             }
-                        } else {
-                            null
-                        }
 
-                        currentPromise?.resolve(
-                          reactMap(
-                            "image" to resultPath?.toString(),
-                            "hasChanges" to (sourcePath?.path != resultPath?.path),
-                            "serialization" to serialization
-                          )
-                        )
+                            currentPromise?.resolve(
+                              reactMap(
+                                "video" to resultPath?.toString(),
+                                "hasChanges" to (sourcePath?.path != resultPath?.path),
+                                "serialization" to serialization
+                              )
+                            )
+                        }()
                     }
                 }
             }

@@ -44,20 +44,13 @@ declare class VESDK {
    * @param {string | object} license The license used to unlock the SDK. Can be either an URI
    * pointing to a local `file://` resource that contains the license, the license as a string,
    * or the license as an object which can be optained by, e.g., `require('./vesdk_license')`
-   * where the required license files must be named `./vesdk_license.ios.json` for the iOS license
-   * and `./vesdk_license.android.json` for the Android license file in order to get automatically
+   * where the required license files must be named `vesdk_license.ios.json` for the iOS license
+   * and `vesdk_license.android.json` for the Android license file in order to get automatically
    * resolved by the packager.
    */
   static unlockWithLicense(
     license: string | object
   ): void
-
-  /**
-   * Creates a configuration object populated with default values for all options.
-   * @return {Configuration} The default configuration.
-   */
-  static createDefaultConfiguration(
-  ): Configuration
 }
 
 /**

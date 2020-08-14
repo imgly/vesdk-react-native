@@ -1,3 +1,14 @@
+## [2.5.0]
+
+### Removed
+
+* 🚨 Removed `createDefaultConfiguration` as the created object is redundant with the `Configuration` documentation and it contains the options that are used per default when the editor is launched without a given configuration.
+
+### Added
+
+* Added integration and identifier documentation for new smart stickers.
+* Added integration and identifier documentation for new GIF sticker category and stickers.
+
 ## [2.4.2]
 
 ### Fixed

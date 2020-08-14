@@ -83,11 +83,11 @@ For older React Native versions autolinking is not available and VideoEditor SDK
        }
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
-           classpath 'ly.img.android.sdk:plugin:7.2.5'
+           classpath 'ly.img.android.sdk:plugin:7.6.0'
        }
    }
    ```
-   In order to update VideoEditor SDK for Android replace the version string `7.2.5` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   In order to update VideoEditor SDK for Android replace the version string `7.6.0` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 3. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file  (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
    ```groovy
@@ -119,6 +119,10 @@ For older React Native versions autolinking is not available and VideoEditor SDK
            include 'assets:overlay-basic'
            include 'assets:sticker-shapes'
            include 'assets:sticker-emoticons'
+           include 'assets:sticker-animated'
+
+           include 'backend:sticker-animated'
+           include 'backend:sticker-smart'
        }
    }
    ```
@@ -131,7 +135,7 @@ Import the module in your `App.js`:
 import {VESDK, VideoEditorModal, Configuration} from 'react-native-videoeditorsdk';
 ```
 
-Unlock VideoEditor SDK with a license file:
+Each platform requires a separate license file. [Unlock VideoEditor SDK](./index.d.ts#L41-L53) automatically for both platforms with a single line of code via [platform-specific file extensions](https://reactnative.dev/docs/platform-specific-code#platform-specific-extensions):
 
 ```js
 VESDK.unlockWithLicense(require('./vesdk_license'));

@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { NativeModules, Image, Platform } from 'react-native';
-import { Configuration, createDefaultConfiguration } from './configuration';
+import { Configuration } from './configuration';
 
 const { RNVideoEditorSDK } = NativeModules;
 
@@ -132,14 +132,6 @@ class VESDK {
     } else {
       RNVideoEditorSDK.unlockWithLicense(license);
     }
-  }
-
-  /**
-   * Creates a configuration object populated with default values for all options.
-   * @return {Configuration} The default configuration.
-   */
-  static createDefaultConfiguration() {
-    return createDefaultConfiguration()
   }
 }
 

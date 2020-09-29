@@ -28,8 +28,8 @@
     "name": "img.ly GmbH",
     "email": "contact@img.ly"
   },
-  "license": "MIT",
-  "licenseFilename": "LICENSE",
+  "license": "BSD-3-Clause",
+  "licenseFilename": "LICENSE.md",
   "readmeFilename": "README.md",
   "peerDependencies": {
     "react-native": ">=0.60.0 <1.0.x"

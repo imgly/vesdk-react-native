@@ -20,7 +20,7 @@ imglyConfig {
     }
 }
 
-def MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION = "7.6.0"
+def MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION = "8.0.4"
 
 task checkVersion {
     if (imglyConfig.convertToVersionNumber(imglyConfig.getVersion()) < imglyConfig.convertToVersionNumber(MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION)) {
@@ -28,8 +28,8 @@ task checkVersion {
             "┌───────────────────────────────────────────────────────────────────────┐\n"+
             "│ VideoEditor SDK update required!                                      │\n"+
             "│ Please update the plugin version in your 'android/build.gradle' file. │\n"+
-            "│ Minimum required dependency: 'ly.img.android.sdk:plugin:${MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION}'       │\n"+
-            "│ Your are currently using:    'ly.img.android.sdk:plugin:${imglyConfig.getVersion()}'       │\n"+
+            "│ Minimum required dependency: 'ly.img.android.sdk:plugin:${MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION}'        │\n"+
+            "│ Your are currently using:    'ly.img.android.sdk:plugin:${imglyConfig.getVersion()}'        │\n"+
             "└───────────────────────────────────────────────────────────────────────┘\n"
 
         throw new GradleScriptException(WRONG_VERSION, new IllegalArgumentException(WRONG_VERSION))

@@ -1,3 +1,13 @@
+## [2.6.0]
+
+### Added
+
+* Support for Android version 8.0.4 upwards.
+
+## Changed
+
+* Minimal version 8.0.4.
+
 ## [2.5.0]
 
 ### Removed

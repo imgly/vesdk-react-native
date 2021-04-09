@@ -1,3 +1,13 @@
+## [2.7.0]
+
+### Changed
+
+* Updated identifier documentation for replaced and new fonts.
+
+### Added
+
+* [iOS] Added support to replace the `VideoEditViewController` with custom subclasses.
+
 ## [2.6.1]
 
 ### Changed

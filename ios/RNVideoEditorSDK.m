@@ -40,9 +40,7 @@ static RNVESDKWillPresentBlock _willPresentVideoEditViewController = nil;
       photoEditModel = deserializationResult.model ?: photoEditModel;
     }
 
-    PESDKVideoEditViewController *videoEditViewController = [[PESDKVideoEditViewController alloc] initWithVideoAsset:video
-                                                                                                       configuration:configuration
-                                                                                                      photoEditModel:photoEditModel];
+    PESDKVideoEditViewController *videoEditViewController = [PESDKVideoEditViewController videoEditViewControllerWithVideoAsset:video configuration:configuration photoEditModel:photoEditModel];
     videoEditViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     videoEditViewController.delegate = self;
     RNVESDKWillPresentBlock willPresentVideoEditViewController = RNVideoEditorSDK.willPresentVideoEditViewController;

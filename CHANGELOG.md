@@ -1,3 +1,9 @@
+## [2.8.0]
+
+### Added
+
+* [iOS] Added integration and documentation for new video composition tool. Android support will be added in a later release.
+
 ## [2.7.0]
 
 ### Changed

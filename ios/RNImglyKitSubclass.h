@@ -30,6 +30,9 @@
 #define RN_IMGLY_ExportFileURL_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, ExportFileURL)
 #define RN_IMGLY_ExportFileURL RN_IMGLY_ExportFileURL_HELPER(RN_IMGLY)
 
+#define RN_IMGLY_URLRequestArray_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, URLRequestArray)
+#define RN_IMGLY_URLRequestArray RN_IMGLY_URLRequestArray_HELPER(RN_IMGLY)
+
 #define RN_IMGLY_valueForKeyPath_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, _valueForKeyPath)
 #define RN_IMGLY_valueForKeyPath RN_IMGLY_valueForKeyPath_HELPER(RN_IMGLY)
 
@@ -98,9 +101,11 @@ extern const struct RN_IMGLY_Constants
 
 typedef NSURL RN_IMGLY_ExportURL;
 typedef NSURL RN_IMGLY_ExportFileURL;
+typedef NSArray<NSURLRequest *> RN_IMGLY_URLRequestArray;
 
 + (nullable RN_IMGLY_ExportURL *)RN_IMGLY_ExportURL:(nullable id)json;
 + (nullable RN_IMGLY_ExportFileURL *)RN_IMGLY_ExportFileURL:(nullable id)json withExpectedUTI:(nonnull CFStringRef)expectedUTI;
++ (nullable RN_IMGLY_URLRequestArray *)RN_IMGLY_URLRequestArray:(nullable id)json;
 
 @end
 

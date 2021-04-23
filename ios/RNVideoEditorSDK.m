@@ -1,6 +1,7 @@
 #import "RNVideoEditorSDK.h"
 #import "RNImglyKit.h"
 #import "RNImglyKitSubclass.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface RNVideoEditorSDK () <PESDKVideoEditViewControllerDelegate>
 
@@ -103,6 +104,53 @@ RCT_EXPORT_METHOD(present:(nonnull NSURLRequest *)request
   }
   PESDKVideo *video = [[PESDKVideo alloc] initWithURL:request.URL];
   [self present:video withConfiguration:configuration andSerialization:state resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)requests
+                  configuration:(nullable NSDictionary *)configuration
+                  serialization:(nullable NSDictionary *)state
+                  videoSize:(CGSize)videoSize
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSMutableArray<AVAsset *> *assets = [NSMutableArray new];
+
+    if (requests.count > 0) {
+        for (NSURLRequest *request in requests) {
+            if (request.URL.isFileURL) {
+              if (![[NSFileManager defaultManager] fileExistsAtPath:request.URL.path]) {
+                reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
+                return;
+              }
+            }
+
+            AVAsset *asset = [AVAsset assetWithURL:request.URL];
+            [assets addObject:asset];
+        }
+    }
+
+    PESDKVideo *video;
+
+    if (CGSizeEqualToSize(videoSize, CGSizeZero)) {
+        if (assets.count == 0) {
+            RCTLogError(@"A video without assets must have a specific size.");
+            reject(RN_IMGLY.kErrorUnableToLoad, @"A video without assets must have a specific size.", nil);
+            return;
+        }
+        video = [[PESDKVideo alloc] initWithAssets:assets];
+    } else {
+        if (videoSize.height <= 0 || videoSize.width <= 0) {
+            RCTLogError(@"Invalid video size: width and height must be greater than zero");
+            reject(RN_IMGLY.kErrorUnableToLoad, @"Invalid video size: width and height must be greater than zero", nil);
+            return;
+        }
+        if (assets.count == 0) {
+            video = [[PESDKVideo alloc] initWithSize:videoSize];
+        }
+        video = [[PESDKVideo alloc] initWithAssets:assets size:videoSize];
+    }
+
+    [self present:video withConfiguration:configuration andSerialization:state resolve:resolve reject:reject];
 }
 
 #pragma mark - PESDKVideoEditViewControllerDelegate

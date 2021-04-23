@@ -349,6 +349,26 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
   return fileURL;
 }
 
++ (nullable RN_IMGLY_URLRequestArray *)RN_IMGLY_URLRequestArray:(nullable id)json
+{
+    NSArray *array = [RCTConvert NSArray:json];
+    NSMutableArray<NSURLRequest *> *requests = [NSMutableArray<NSURLRequest *> new];
+    if (array.count == 0) { return [requests copy]; }
+    for (id value in array) {
+        if (value == (id)[NSNull null]) {
+            RCTLogConvertError(json, @"a valid NSArray<NSURLRequest *>");
+            return nil;
+        }
+        NSURLRequest *request = [RCTConvert NSURLRequest:value];
+        if (request == nil) {
+            RCTLogConvertError(value, @"a valid NSURLRequest");
+            return nil;
+        }
+        [requests addObject:request];
+    }
+    return [requests copy];
+}
+
 @end
 
 @implementation NSDictionary (RN_IMGLY_Category)

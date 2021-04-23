@@ -27,10 +27,13 @@ export interface Configuration {
   /**
    * Defines all allowed actions for the main screen that are displayed as overlay buttons on the canvas.
    * Only buttons for allowed actions are visible.
+   * @note The `CanvasAction.SOUND_ON_OFF` and `CanvasAction.PLAY_PAUSE` action is only shown when editing videos.
    * @example // Defaults to:
-   * [CanvasAction.UNDO, CanvasAction.REDO]
+   * [CanvasAction.SOUND_ON_OFF, CanvasAction.PLAY_PAUSE, CanvasAction.UNDO, CanvasAction.REDO]
    */
   mainCanvasActions?: Array<
+    CanvasAction.SOUND_ON_OFF |
+    CanvasAction.PLAY_PAUSE |
     CanvasAction.UNDO |
     CanvasAction.REDO
   >;
@@ -143,9 +146,63 @@ export interface Configuration {
   /**
    * The menu items (or tools) to display in the main menu.
    * @example // Defaults to:
+   * [Tool.COMPOSITION, Tool.TRANSFORM, Tool.FILTER, Tool.ADJUSTMENT, Tool.FOCUS, Tool.STICKER, Tool.TEXT, Tool.TEXT_DESIGN, Tool.OVERLAY, Tool.FRAME, Tool.BRUSH]
+   * // or if your license does not include `Tool.COMPOSITION`:
    * [Tool.TRIM, Tool.TRANSFORM, Tool.FILTER, Tool.ADJUSTMENT, Tool.FOCUS, Tool.STICKER, Tool.TEXT, Tool.TEXT_DESIGN, Tool.OVERLAY, Tool.FRAME, Tool.BRUSH]
    */
   tools?: Tool[];
+
+  /**
+   * Configuration options for `Tool.COMPOSITION`.
+   */
+  composition?: {
+    /**
+     * Defines all allowed actions for the composition tool that are displayed as overlay buttons on the canvas.
+     * Only buttons for allowed actions are visible.
+     * @example // Defaults to:
+     * [CanvasAction.PLAY_PAUSE]
+     */
+    canvasActions?: Array<
+      CanvasAction.PLAY_PAUSE
+    >;
+    /**
+     * If enabled the user can add personal video clips from the device's media library. A button is added as last item in the composition
+     * menu.
+     * @example // Defaults to:
+     * true
+     */
+    personalVideoClips?: boolean;
+    /**
+     * Configuration options for trimming individual video clips of the video composition.
+     */
+    clipTrim?: {
+      /**
+       * Defines all allowed actions for the clip trim tool that are displayed as overlay buttons on the canvas.
+       * Only buttons for allowed actions are visible.
+       * @example // Defaults to:
+       * [CanvasAction.DELETE, CanvasAction.PLAY_PAUSE]
+       */
+      canvasActions?: Array<
+        CanvasAction.DELETE |
+        CanvasAction.PLAY_PAUSE
+      >;
+    }
+  }
+
+  /**
+   * Configuration options for `Tool.TRIM`.
+   */
+  trim?: {
+    /**
+     * Defines all allowed actions for the trim tool that are displayed as overlay buttons on the canvas.
+     * Only buttons for allowed actions are visible.
+     * @example // Defaults to:
+     * [CanvasAction.DELETE, CanvasAction.PLAY_PAUSE]
+     */
+    canvasActions?: Array<
+      CanvasAction.PLAY_PAUSE
+    >;
+  }
 
   /**
    * Configuration options for `Tool.TRANSFORM`.
@@ -949,6 +1006,8 @@ export interface Configuration {
 
 /** An image and/or video editing tool. */
 export enum Tool {
+  /** A tool to compose a video from multiple video clips and to trim the timeline of the composition and the individual clips. */
+  COMPOSITION = "composition",
   /** A tool to trim the timeline of videos. */
   TRIM = "trim",
   /** A tool to apply an transformation, such as cropping or rotation. */
@@ -1075,6 +1134,8 @@ export enum CanvasAction {
   ADD = "add",
   FLIP = "flip",
   INVERT = "invert",
+  SOUND_ON_OFF = "soundonoff",
+  PLAY_PAUSE = "playpause",
 }
 
 /** A sticker action. */

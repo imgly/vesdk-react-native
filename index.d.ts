@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Configuration } from './configuration';
+import { AssetURI, Configuration } from './configuration';
 
 /**
  * The result of an export.
@@ -13,6 +13,14 @@ interface VideoEditorResult {
   serialization?: string | object;
 }
 
+/** An object that contains width and height values. */
+interface Size {
+  /** A width value. */
+  width: number;
+  /** A height value. */
+  height: number;
+}
+
 declare class VESDK {
   /**
    * Modally present a video editor.
@@ -21,21 +29,29 @@ declare class VESDK {
    * loading videos with `require('./video.mp4')` for debug builds static video assets will be
    * resolved to remote URLs served by the development packager.
    *
-   * @param {string | {uri: string} | number} video The source of the video to be edited.
+   * @param {AssetURI | [AssetURI] | {uri: string}} video The source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
+   * 
+   * **iOS only:**
+   * For video compositions an array of video sources is accepted as input. If an empty array is
+   * passed to the editor `videoSize` must be set.
    * @param {Configuration} configuration The configuration used to initialize the editor.
    * @param {object} serialization The serialization used to initialize the editor. This
    * restores a previous state of the editor by re-applying all modifications to the loaded
    * video.
+   * @param {Size} videoSize **iOS only:** The size of the video in pixels that is about to be edited.
+   * This overrides the natural dimensions of the video(s) passed to the editor. All videos will
+   * be fitted to the `videoSize` aspect by adding black bars on the left and right side or top and bottom.
    *
    * @return {Promise<VideoEditorResult>} Returns a `VideoEditorResult` or `null` if the editor
    * is dismissed without exporting the edited video.
    */
   static openEditor(
-    video: string | {uri: string} | number,
+    video: AssetURI | [AssetURI] | {uri: string},
     configuration?: Configuration,
-    serialization?: object
+    serialization?: object,
+    videoSize?: Size
   ): Promise<VideoEditorResult>
 
   /**
@@ -66,13 +82,15 @@ interface VideoEditorModalProps {
    * This prop determines the source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
+   * For video compositions an array of video sources is accepted as input. If an empty array is
+   * passed to the editor `videoSize` must be set.
    *
    * @note Edited videos from remote resources can be previewed in the editor but their export will
    * fail! Remote video resources are currently supported for debugging purposes only, e.g., when
    * loading videos with `require('./video.mp4')` for debug builds static video assets will be
    * resolved to remote URLs served by the development packager.
    */
-  video: string | {uri: string} | number;
+  video: AssetURI | [AssetURI] | {uri: string};
 
   /**
    * This prop determines the configuration used to initialize the editor.
@@ -85,6 +103,13 @@ interface VideoEditorModalProps {
    * video.
    */
   serialization?: object;
+
+  /**
+   * The size of the video in pixels that is about to be edited.
+   * This overrides the natural dimensions of the video(s) passed to the editor. All videos will
+   * be fitted to the `videoSize` aspect by adding black bars on the left and right side or top and bottom.
+   */
+  videoSize?: Size;
 
   /**
    * This prop determines the callback function that will be called when the user exported a video.

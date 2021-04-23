@@ -95,24 +95,47 @@ class VESDK {
    * loading videos with `require('./video.mp4')` for debug builds static video assets will be
    * resolved to remote URLs served by the development packager.
    *
-   * @param {string | {uri: string} | number} video The source of the video to be edited.
+   * @param {AssetURI | [AssetURI] | {uri: string}} video The source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
+   * 
+   * **iOS only:**
+   * For video compositions an array of video sources is accepted as input. If an empty array is
+   * passed to the editor `videoSize` must be set.
    * @param {Configuration} configuration The configuration used to initialize the editor.
    * @param {object} serialization The serialization used to initialize the editor. This
    * restores a previous state of the editor by re-applying all modifications to the loaded
    * video.
+   * @param {Size} videoSize **iOS only:** The size of the video in pixels that is about to be edited.
+   * This overrides the natural dimensions of the video(s) passed to the editor. All videos will
+   * be fitted to the `videoSize` aspect by adding black bars on the left and right side or top and bottom.
    *
    * @return {Promise<VideoEditorResult>} Returns a `VideoEditorResult` or `null` if the editor
    * is dismissed without exporting the edited video.
    */
-  static openEditor(video, configuration = null, serialization = null) {
+  static openEditor(video, configuration = null, serialization = null, videoSize = null) {
     resolveStaticAssets(configuration)
-    const source = resolveStaticAsset(video, Platform.OS == 'android');
+
     if (Platform.OS == 'android') {
-      return RNVideoEditorSDK.present(source, configuration, serialization != null ? JSON.stringify(serialization) : null);
+      if (Array.isArray(video) || videoSize != null) {
+        return Promise.reject("Video composition is currently not supported on Android.");
+      }
+      const resolvedVideo = resolveStaticAsset(video, true);
+      return RNVideoEditorSDK.present(resolvedVideo, configuration, serialization != null ? JSON.stringify(serialization) : null);
     } else {
-      return RNVideoEditorSDK.present(source, configuration, serialization);
+      const videoDimensions = videoSize == null ? {height: 0, width: 0} : videoSize;
+
+      if (Array.isArray(video)) {
+        var source = [];
+  
+        video.forEach((videoClip) => {
+          source.push(resolveStaticAsset(videoClip, false));
+        });
+        return RNVideoEditorSDK.presentComposition(source, configuration, serialization, videoDimensions);
+      } else {
+        const resolvedVideo = resolveStaticAsset(video, false);
+        return RNVideoEditorSDK.presentComposition([resolvedVideo], configuration, serialization, videoDimensions);
+      }
     }
   }
 
@@ -141,9 +164,9 @@ class VideoEditorModal extends Component {
   }
 
   static getDerivedStateFromProps = (props, state) => {
-    const { video, configuration, serialization, onExport, onCancel, onError } = props;
+    const { video, configuration, serialization, videoSize, onExport, onCancel, onError } = props;
     if (props.visible  && !state.visible) {
-      VESDK.openEditor(video, configuration, serialization).then(result => {
+      VESDK.openEditor(video, configuration, serialization, videoSize).then(result => {
         if (result !== null) {
           onExport(result);
         } else {

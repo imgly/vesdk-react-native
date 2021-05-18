@@ -115,28 +115,19 @@ class VESDK {
    */
   static openEditor(video, configuration = null, serialization = null, videoSize = null) {
     resolveStaticAssets(configuration)
-
-    if (Platform.OS == 'android') {
-      if (Array.isArray(video) || videoSize != null) {
-        return Promise.reject("Video composition is currently not supported on Android.");
-      }
-      const resolvedVideo = resolveStaticAsset(video, true);
-      return RNVideoEditorSDK.present(resolvedVideo, configuration, serialization != null ? JSON.stringify(serialization) : null);
-    } else {
-      const videoDimensions = videoSize == null ? {height: 0, width: 0} : videoSize;
+      const videoDimensions = videoSize == null ? (Platform.OS == 'android' ? null : {height: 0, width: 0}) : videoSize;
 
       if (Array.isArray(video)) {
         var source = [];
   
         video.forEach((videoClip) => {
-          source.push(resolveStaticAsset(videoClip, false));
+          source.push(resolveStaticAsset(videoClip, Platform.OS == 'android'));
         });
         return RNVideoEditorSDK.presentComposition(source, configuration, serialization, videoDimensions);
       } else {
-        const resolvedVideo = resolveStaticAsset(video, false);
+        const resolvedVideo = resolveStaticAsset(video, Platform.OS == 'android');
         return RNVideoEditorSDK.presentComposition([resolvedVideo], configuration, serialization, videoDimensions);
       }
-    }
   }
 
   /**

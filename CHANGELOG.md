@@ -1,3 +1,9 @@
+## [2.9.0]
+
+### Added
+
+* [Android] Added integration for new video composition tool.
+
 ## [2.8.0]
 
 ### Added

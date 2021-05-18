@@ -13,7 +13,6 @@ import ly.img.android.IMGLY
 import ly.img.android.VESDK
 import ly.img.android.pesdk.VideoEditorSettingsList
 import ly.img.android.pesdk.backend.model.state.LoadSettings
-import ly.img.android.pesdk.backend.model.state.SaveSettings
 import ly.img.android.pesdk.backend.model.state.manager.SettingsList
 import ly.img.android.pesdk.kotlin_extension.continueWithExceptions
 import ly.img.android.pesdk.ui.activity.ImgLyIntent
@@ -28,6 +27,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
 import ly.img.android.pesdk.backend.encoder.Encoder
+import ly.img.android.pesdk.backend.model.state.VideoCompositionSettings
 import ly.img.android.serializer._3.IMGLYFileReader
 import ly.img.android.serializer._3.IMGLYFileWriter
 
@@ -133,18 +133,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
 
             settingsList.configure<LoadSettings> { loadSettings ->
-                video.also {
-                    if (it.startsWith("data:")) {
-                        loadSettings.source = UriHelper.createFromBase64String(it.substringAfter("base64,"))
-                    } else {
-                        val potentialFile = continueWithExceptions { File(it) }
-                        if (potentialFile?.exists() == true) {
-                            loadSettings.source = Uri.fromFile(potentialFile)
-                        } else {
-                            loadSettings.source = ConfigLoader.parseUri(it)
-                        }
-                    }
-                }
+                loadSettings.source = retrieveURI(video)
             }
 
             readSerialisation(settingsList, serialization, false)
@@ -155,6 +144,79 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         } else {
             promise.reject("VESDK", "The video editor is only available in Android 4.3 and later.")
         }
+    }
+
+    @ReactMethod
+    fun presentComposition(videos: ReadableArray, config: ReadableMap?, serialization: String?, size: ReadableMap?, promise: Promise) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            val array = videos.toArrayList()
+            val videoArray = array.filterIsInstance<String>().takeIf { it.size == array.size } ?: arrayListOf()
+            val settingsList = VideoEditorSettingsList()
+            var source = resolveSize(size)
+
+            currentSettingsList = settingsList
+            currentConfig = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf()).also {
+                it.applyOn(settingsList)
+            }
+            currentPromise = promise
+
+            if (videoArray.count() > 0) {
+                if (source == null) {
+                    if (size != null) {
+                        promise.reject("VESDK", "Invalid video size: width and height must be greater than zero.")
+                        return
+                    }
+                    val video = videoArray.first()
+                    source = retrieveURI(video)
+                }
+
+                settingsList.configure<VideoCompositionSettings> { loadSettings ->
+                    videoArray.forEach {
+                        val resolvedSource = retrieveURI(it)
+                        loadSettings.addCompositionPart(VideoCompositionSettings.VideoPart(resolvedSource))
+                    }
+                }
+            } else {
+                if (source == null) {
+                    promise.reject("VESDK", "The editor requires a valid size when initialized without a video.")
+                    return
+                }
+            }
+
+            settingsList.configure<LoadSettings> {
+                it.source = source
+            }
+
+            readSerialisation(settingsList, serialization, false)
+            if (checkPermissions()) {
+                startEditor(settingsList)
+            }
+        } else {
+            promise.reject("VESDK", "The video editor is only available in Android 4.3 and later.")
+        }
+    }
+
+    private fun retrieveURI(source: String) : Uri {
+        return if (source.startsWith("data:")) {
+            UriHelper.createFromBase64String(source.substringAfter("base64,"))
+        } else {
+            val potentialFile = continueWithExceptions { File(source) }
+            if (potentialFile?.exists() == true) {
+                Uri.fromFile(potentialFile)
+            } else {
+                ConfigLoader.parseUri(source)
+            }
+        }
+    }
+
+    private fun resolveSize(size: ReadableMap?) : Uri? {
+        val sizeMap = size?.toHashMap()
+        val height = sizeMap?.get("height") as? Double ?: 0.0
+        val width = sizeMap?.get("width") as? Double ?: 0.0
+        if (height == 0.0 || width == 0.0) {
+            return null
+        }
+        return LoadSettings.compositionSource(height.toInt(), width.toInt(), 60)
     }
 
     private fun checkPermissions(): Boolean {

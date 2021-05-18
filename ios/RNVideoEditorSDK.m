@@ -134,7 +134,7 @@ RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)request
     if (CGSizeEqualToSize(videoSize, CGSizeZero)) {
         if (assets.count == 0) {
             RCTLogError(@"A video without assets must have a specific size.");
-            reject(RN_IMGLY.kErrorUnableToLoad, @"A video without assets must have a specific size.", nil);
+            reject(RN_IMGLY.kErrorUnableToLoad, @"The editor requires a valid size when initialized without a video.", nil);
             return;
         }
         video = [[PESDKVideo alloc] initWithAssets:assets];

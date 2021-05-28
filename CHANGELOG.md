@@ -1,3 +1,13 @@
+## [2.10.0]
+
+### Added
+
+* Added integration and documentation for new video library and audio library.
+
+### Fixed
+
+* [Android] Fixed crash when loading a serialization.
+
 ## [2.9.0]
 
 ### Added

@@ -157,6 +157,15 @@ export interface Configuration {
    */
   composition?: {
     /**
+     * Defines all available video clips in the video clip library. Each video clip must be assigned to a category.
+     * @note If this array is `null` the defaults are used. If this array is empty the video clip library won't be shown when the user
+     * taps the add button in the composition menu instead the device's media library will be shown directly when `personalVideoClips` is enabled.
+     * If `personalVideoClips` is disabled in this case the add button in the composition menu won't be shown at all.
+     * @example // Defaults to:
+     * []
+     */
+    categories?: (VideoClipCategory)[];
+    /**
      * Defines all allowed actions for the composition tool that are displayed as overlay buttons on the canvas.
      * Only buttons for allowed actions are visible.
      * @example // Defaults to:
@@ -167,7 +176,7 @@ export interface Configuration {
     >;
     /**
      * If enabled the user can add personal video clips from the device's media library. A button is added as last item in the composition
-     * menu.
+     * menu or as first item in the video clip library menu in front of the video clip categories if any `categories` are defined.
      * @example // Defaults to:
      * true
      */
@@ -200,6 +209,28 @@ export interface Configuration {
      * [CanvasAction.DELETE, CanvasAction.PLAY_PAUSE]
      */
     canvasActions?: Array<
+      CanvasAction.PLAY_PAUSE
+    >;
+  }
+
+  /**
+   * Configuration options for `Tool.AUDIO`.
+   */
+  audio?: {
+    /**
+     * Defines all available audio clips in the audio clip library. Each audio clip must be assigned to a category.
+     * @example // Defaults to:
+     * []
+     */
+    categories?: (AudioClipCategory)[];
+    /**
+     * Defines all allowed actions for the audio tool that are displayed as overlay buttons on the canvas.
+     * Only buttons for allowed actions are visible.
+     * @example // Defaults to:
+     * [CanvasAction.DELETE]
+     */
+    canvasActions?: Array<
+      CanvasAction.DELETE |
       CanvasAction.PLAY_PAUSE
     >;
   }
@@ -1010,6 +1041,8 @@ export enum Tool {
   COMPOSITION = "composition",
   /** A tool to trim the timeline of videos. */
   TRIM = "trim",
+  /** A tool to edit the audio track of videos. */
+  AUDIO = "audio",
   /** A tool to apply an transformation, such as cropping or rotation. */
   TRANSFORM = "transform",
   /** A tool to apply an image filter effect. */
@@ -1239,6 +1272,97 @@ export interface ExistingItem extends UniqueItem {}
 export interface NamedItem extends UniqueItem {
   /** A displayable name for the item which is also used for accessibliblity. */
   name: string;
+}
+
+/** A media item. */
+export interface MediaItem extends UniqueItem {
+  /**
+   * The title of the media item.
+   * @example // Defaults to:
+   * null
+   */
+  title?: string;
+  /**
+   * The artist of the media item.
+   * @example // Defaults to:
+   * null
+   */
+  artist?: string;
+}
+
+/** A video clip category. */
+export interface VideoClipCategory extends NamedItem {
+  /**
+   * A URI for the thumbnail image of the category.
+   * If `null` a placeholder image will be used.
+   */
+  thumbnailURI?: AssetURI;
+  /**
+   * Items of the category.
+   * If `null` an empty category will be created.
+   * @example // Defaults to:
+   * null
+   */
+  items?: (VideoClip)[];
+}
+
+/** A video clip. */
+export interface VideoClip extends MediaItem {
+  /**
+   * A URI for the thumbnail image of the video clip.
+   * If `null` the thumbnail will be automatically generated from the `videoURI`.
+   * @example // Defaults to:
+   * null
+   */
+  thumbnailURI?: AssetURI;
+  /** A URI for the video clip.
+   * @note Video clips from remote resources can be previewed in the editor but their export will
+   * fail! Remote video resources are currently supported for debugging purposes only, e.g., when
+   * loading video clips with `require('./video.mp4')` for debug builds static video assets will be
+   * resolved to remote URLs served by the development packager.
+   */
+  videoURI: AssetURI;
+}
+
+/** A audio clip category. */
+export interface AudioClipCategory extends NamedItem {
+  /**
+   * A URI for the thumbnail image of the category.
+   * If `null` a placeholder image will be used.
+   */
+  thumbnailURI?: AssetURI;
+  /**
+   * Items of the category.
+   * If `null` an empty category will be created.
+   * @example // Defaults to:
+   * null
+   */
+  items?: (AudioClip)[];
+}
+
+/** An audio clip. */
+export interface AudioClip extends MediaItem {
+  /**
+   * A URI for the thumbnail image of the audio clip.
+   * If `null` a placeholder image will be used.
+   * @example // Defaults to:
+   * null
+   */
+  thumbnailURI?: AssetURI;
+  /**
+   * The duration of the audio clip in seconds.
+   * If `null` the duration will be automatically derived from the asset.
+   * @example // Defaults to:
+   * null
+   */
+  duration?: number;
+  /** A URI for the audio clip.
+   * @note Audio clips from remote resources can be previewed in the editor but their export will
+   * fail! Remote audio resources are currently supported for debugging purposes only, e.g., when
+   * loading audio clips with `require('./audio.mp3')` for debug builds static audio assets will be
+   * resolved to remote URLs served by the development packager.
+   */
+  audioURI: AssetURI;
 }
 
 /** An existing filter category. */

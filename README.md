@@ -83,11 +83,11 @@ For older React Native versions autolinking is not available and VideoEditor SDK
        }
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10"
-           classpath 'ly.img.android.sdk:plugin:8.2.0'
+           classpath 'ly.img.android.sdk:plugin:8.3.0'
        }
    }
    ```
-   In order to update VideoEditor SDK for Android replace the version string `8.2.0` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   In order to update VideoEditor SDK for Android replace the version string `8.3.0` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 3. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file  (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
    ```groovy
@@ -108,7 +108,9 @@ For older React Native versions autolinking is not available and VideoEditor SDK
            include 'ui:adjustment'
            include 'ui:text-design'
            include 'ui:video-trim'
+           include 'ui:video-library'
            include 'ui:video-composition'
+           include 'ui:audio-composition'
 
            // This module is big, remove the serializer if you don't need that feature.
            include 'backend:serializer'

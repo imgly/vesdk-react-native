@@ -29,6 +29,32 @@ function resolveNestedAsset(nestedObject, pathArray) {
 }
 
 function resolveStaticAssets(configuration) {
+  let videoClipCategories = getNestedObject(configuration, ["composition", "categories"]);
+  if (videoClipCategories) {
+    for (let category of videoClipCategories) {
+      resolveNestedAsset(category, ["thumbnailURI"]);
+      let videoClips = getNestedObject(category, ["items"]);
+      if (videoClips) {
+        for (let videoClip of videoClips) {
+          resolveNestedAsset(videoClip, ["thumbnailURI"]);
+          resolveNestedAsset(videoClip, ["videoURI"]);
+        }
+      }
+    }
+  }
+  let audioClipCategories = getNestedObject(configuration, ["audio", "categories"]);
+  if (audioClipCategories) {
+    for (let category of audioClipCategories) {
+      resolveNestedAsset(category, ["thumbnailURI"]);
+      let audioClips = getNestedObject(category, ["items"]);
+      if (audioClips) {
+        for (let audioClip of audioClips) {
+          resolveNestedAsset(audioClip, ["thumbnailURI"]);
+          resolveNestedAsset(audioClip, ["audioURI"]);
+        }
+      }
+    }
+  }
   let filterCategories = getNestedObject(configuration, ["filter", "categories"]);
   if (filterCategories) {
     for (let category of filterCategories) {
@@ -98,7 +124,7 @@ class VESDK {
    * @param {AssetURI | [AssetURI] | {uri: string}} video The source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
-   * 
+   *
    * **iOS only:**
    * For video compositions an array of video sources is accepted as input. If an empty array is
    * passed to the editor `videoSize` must be set.
@@ -116,17 +142,18 @@ class VESDK {
   static openEditor(video, configuration = null, serialization = null, videoSize = null) {
     resolveStaticAssets(configuration)
       const videoDimensions = videoSize == null ? (Platform.OS == 'android' ? null : {height: 0, width: 0}) : videoSize;
+      const resolvedSerialization = Platform.OS == 'android' ? (serialization != null ? JSON.stringify(serialization) : null) : serialization;
 
       if (Array.isArray(video)) {
         var source = [];
-  
+
         video.forEach((videoClip) => {
           source.push(resolveStaticAsset(videoClip, Platform.OS == 'android'));
         });
-        return RNVideoEditorSDK.presentComposition(source, configuration, serialization, videoDimensions);
+        return RNVideoEditorSDK.presentComposition(source, configuration, resolvedSerialization, videoDimensions);
       } else {
         const resolvedVideo = resolveStaticAsset(video, Platform.OS == 'android');
-        return RNVideoEditorSDK.presentComposition([resolvedVideo], configuration, serialization, videoDimensions);
+        return RNVideoEditorSDK.presentComposition([resolvedVideo], configuration, resolvedSerialization, videoDimensions);
       }
   }
 

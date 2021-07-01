@@ -71,25 +71,27 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                             val serialization: Any? = if (serializationConfig?.enabled == true) {
                                 skipIfNotExists {
                                     settingsList.let { settingsList ->
-                                        if (serializationConfig.embedSourceImage == true) {
-                                            Log.i("ImgLySdk", "EmbedSourceImage is currently not supported by the Android SDK")
-                                        }
-                                        when (serializationConfig.exportType) {
-                                            SerializationExportType.FILE_URL -> {
-                                                 val uri = serializationConfig.filename?.let { 
-                                                    Uri.parse(it)
-                                                } ?: Uri.fromFile(File.createTempFile("serialization", ".json"))
-                                                Encoder.createOutputStream(uri).use { outputStream -> 
-                                                    IMGLYFileWriter(settingsList).writeJson(outputStream);
-                                                }
-                                                uri.toString()
+                                        if (settingsList != null) {
+                                            if (serializationConfig.embedSourceImage == true) {
+                                                Log.i("ImgLySdk", "EmbedSourceImage is currently not supported by the Android SDK")
                                             }
-                                            SerializationExportType.OBJECT -> {
-                                                ReactJSON.convertJsonToMap(
-                                                  JSONObject(
-                                                    IMGLYFileWriter(settingsList).writeJsonAsString()
-                                                  )
-                                                ) as Any?
+                                            when (serializationConfig.exportType) {
+                                                SerializationExportType.FILE_URL -> {
+                                                    val uri = serializationConfig.filename?.let {
+                                                        Uri.parse(it)
+                                                    } ?: Uri.fromFile(File.createTempFile("serialization", ".json"))
+                                                    Encoder.createOutputStream(uri).use { outputStream ->
+                                                        IMGLYFileWriter(settingsList).writeJson(outputStream);
+                                                    }
+                                                    uri.toString()
+                                                }
+                                                SerializationExportType.OBJECT -> {
+                                                    ReactJSON.convertJsonToMap(
+                                                            JSONObject(
+                                                                    IMGLYFileWriter(settingsList).writeJsonAsString()
+                                                            )
+                                                    ) as Any?
+                                                }
                                             }
                                         }
                                     }
@@ -102,11 +104,11 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                             }
 
                             currentPromise?.resolve(
-                              reactMap(
-                                "video" to resultPath?.toString(),
-                                "hasChanges" to (sourcePath?.path != resultPath?.path),
-                                "serialization" to serialization
-                              )
+                                    reactMap(
+                                            "video" to resultPath?.toString(),
+                                            "hasChanges" to (sourcePath?.path != resultPath?.path),
+                                            "serialization" to serialization
+                                    )
                             )
                         }()
                     }
@@ -258,8 +260,8 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
             }
             MainThreadRunnable {
                 VideoEditorBuilder(currentActivity)
-                  .setSettingsList(settingsList)
-                  .startActivityForResult(currentActivity, EDITOR_RESULT_ID)
+                        .setSettingsList(settingsList)
+                        .startActivityForResult(currentActivity, EDITOR_RESULT_ID)
             }()
         }
     }

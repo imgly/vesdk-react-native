@@ -1,3 +1,10 @@
+## [2.10.1]
+
+### Fixed
+
+* [Android] Fixed compiling issues with `compileSdkVersion` 30.
+* [Android] Fixed video not being loaded when opening a single video without having video composition enabled in the license. 
+
 ## [2.10.0]
 
 ### Added

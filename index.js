@@ -125,14 +125,14 @@ class VESDK {
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
    *
-   * **iOS only:**
    * For video compositions an array of video sources is accepted as input. If an empty array is
-   * passed to the editor `videoSize` must be set.
+   * passed to the editor `videoSize` must be set. You need to obtain a **valid license** for this 
+   * feature to work.
    * @param {Configuration} configuration The configuration used to initialize the editor.
    * @param {object} serialization The serialization used to initialize the editor. This
    * restores a previous state of the editor by re-applying all modifications to the loaded
    * video.
-   * @param {Size} videoSize **iOS only:** The size of the video in pixels that is about to be edited.
+   * @param {Size} videoSize **Video composition only:** The size of the video in pixels that is about to be edited.
    * This overrides the natural dimensions of the video(s) passed to the editor. All videos will
    * be fitted to the `videoSize` aspect by adding black bars on the left and right side or top and bottom.
    *
@@ -152,8 +152,11 @@ class VESDK {
         });
         return RNVideoEditorSDK.presentComposition(source, configuration, resolvedSerialization, videoDimensions);
       } else {
+        if (videoSize != null) {
+          console.warn("Ignoring the video size. This parameter can only be used in combination with video compositions. If your license includes the video composition feature please wrap your video source into an array instead.")
+        }
         const resolvedVideo = resolveStaticAsset(video, Platform.OS == 'android');
-        return RNVideoEditorSDK.presentComposition([resolvedVideo], configuration, resolvedSerialization, videoDimensions);
+        return RNVideoEditorSDK.present(resolvedVideo, configuration, resolvedSerialization);
       }
   }
 

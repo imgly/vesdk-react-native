@@ -145,7 +145,7 @@ class VESDK {
       const resolvedSerialization = Platform.OS == 'android' ? (serialization != null ? JSON.stringify(serialization) : null) : serialization;
 
       if (Array.isArray(video)) {
-        var source = [];
+        var source: Array<any> = [];
 
         video.forEach((videoClip) => {
           source.push(resolveStaticAsset(videoClip, Platform.OS == 'android'));

@@ -3,10 +3,15 @@
   "title": "React Native module for VideoEditor SDK",
   "version": "2.11.0",
   "description": "A React Native module for VideoEditor SDK. Integrate the video editor into your own HTML5, iOS or Android app - in minutes!",
-  "main": "index.js",
-  "typings": "index.d.ts",
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "repository": {
     "type": "git",
@@ -33,5 +38,12 @@
   "readmeFilename": "README.md",
   "peerDependencies": {
     "react-native": ">=0.60.0 <1.0.x"
+  },
+  "dependencies": {
+    "@expo/config-plugins": "^4.0.6"
+  },
+  "devDependencies": {
+    "@expo/config-types": "^43.0.1",
+    "expo-module-scripts": "^2.0.0"
   }
 }

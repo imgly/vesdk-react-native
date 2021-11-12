@@ -80,7 +80,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     }
 
     // Set default values if necessary
-    id valueExportType = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.type" default:RN_IMGLY.kExportTypeFileURL];
+    id valueExportType = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.image.exportType" default:RN_IMGLY.kExportTypeFileURL];
     id valueExportFile = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.filename" default:[NSString stringWithFormat:@"imgly-export/%@", [[NSUUID UUID] UUIDString]]];
     id valueSerializationEnabled = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.enabled" default:@(NO)];
     id valueSerializationType = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.exportType" default:RN_IMGLY.kExportTypeFileURL];

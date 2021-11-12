@@ -1,3 +1,15 @@
+## [2.11.0]
+
+### Changed
+
+* [Android] 🚨 The img.ly maven repository is no longer automatically added to your project by the plugin. Please refer to the new step 3 in the [getting started](https://github.com/imgly/vesdk-react-native#android) section of the README for instructions on how to add it.
+* [Android] Added support for VideoEditor SDK for Android version 9.
+
+### Added
+
+* Added integration and documentation for force trim.
+* Added `configuration.export.force` which will force the video to be rendered and exported in the defined output format even if no changes have been applied. Otherwise, the input asset will be passed through and might not match the defined output format.
+
 ## [2.10.1]
 
 ### Fixed

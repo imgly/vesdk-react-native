@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://www.videoeditorsdk.com/?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native">
-    <img src="https://static.photoeditorsdk.com/vesdk/vesdk-logo-s.svg" alt="VideoEditor SDK Logo"/>
+  <a href="https://img.ly/video-sdk?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native">
+    <img src="https://img.ly/static/logos/VE.SDK_Logo.svg" alt="VideoEditor SDK Logo"/>
   </a>
 </p>
 <p align="center">
@@ -17,7 +17,7 @@
 
 # React Native module for VideoEditor SDK
 
-Check out our [video tutorial](https://blog.photoeditorsdk.com/a-photo-and-video-editor-for-your-react-native-apps) for a step-by-step integration guide which also details advanced SDK features, such as serializing and reusing previously applied editing operations.
+Check out our [video tutorial](https://img.ly/blog/a-photo-and-video-editor-for-your-react-native-apps/) for a step-by-step integration guide which also details advanced SDK features, such as serializing and reusing previously applied editing operations.
 
 ## Getting started
 
@@ -27,7 +27,7 @@ Install the React Native module in your project as follows:
 yarn add react-native-videoeditorsdk
 ```
 
-In general, [we highly recommend using React Native 0.60 or newer](https://blog.photoeditorsdk.com/react-native-native-modules-made-for-react-developers-59ca93c41541). If you cannot avoid using an older React Native version you need to [link the native dependencies](https://facebook.github.io/react-native/docs/0.59/linking-libraries-ios#step-2) with:
+In general, [we highly recommend using React Native 0.60 or newer](https://img.ly/blog/react-native-native-modules-made-for-react-developers-59ca93c41541/). If you cannot avoid using an older React Native version you need to [link the native dependencies](https://facebook.github.io/react-native/docs/0.59/linking-libraries-ios#step-2) with:
 
 ```sh
 yarn react-native link
@@ -51,7 +51,7 @@ cd ios && pod update && cd ..
 
 with CocoaPods.
 
-For older React Native versions autolinking is not available and VideoEditor SDK for iOS needs to be [manually integrated](https://docs.videoeditorsdk.com/guides/ios/v10/introduction/getting_started#manually) in your Xcode project if you don't use [CocoaPods to manage your dependencies](https://facebook.github.io/react-native/docs/0.59/integration-with-existing-apps#configuring-cocoapods-dependencies). Make sure to put `ImglyKit.framework` and `VideoEditorSDK.framework` in the `ios/` directory of your project.
+For older React Native versions autolinking is not available and VideoEditor SDK for iOS needs to be [manually integrated](https://img.ly/docs/vesdk/ios/introduction/getting_started/#manually) in your Xcode project if you don't use [CocoaPods to manage your dependencies](https://facebook.github.io/react-native/docs/0.59/integration-with-existing-apps#configuring-cocoapods-dependencies). Make sure to put `ImglyKit.framework` and `VideoEditorSDK.framework` in the `ios/` directory of your project.
 
 ### Android
 
@@ -83,13 +83,23 @@ For older React Native versions autolinking is not available and VideoEditor SDK
        }
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10"
-           classpath 'ly.img.android.sdk:plugin:8.3.1'
+           classpath 'ly.img.android.sdk:plugin:9.1.0'
        }
    }
    ```
-   In order to update VideoEditor SDK for Android replace the version string `8.3.1` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   In order to update VideoEditor SDK for Android replace the version string `9.1.0` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
-3. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file  (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
+3. Still in the `android/build.gradle` file (**not** `android/app/build.gradle`), add these lines at the bottom:
+
+```groovy
+ allprojects {
+     repositories {
+         maven { url 'https://artifactory.img.ly/artifactory/imgly' }
+     }
+ }
+```
+
+4. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file  (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
    ```groovy
    apply plugin: 'ly.img.android.sdk'
    apply plugin: 'kotlin-android'
@@ -158,7 +168,7 @@ Or use the component to open the editor:
 
 Please see the [code documentation](./index.d.ts) for more details and additional [customization and configuration options](./configuration.ts).
 
-For configuring and customizing VideoEditor SDK beyond these options exposed to JavaScript the iOS bridge provides an [interface for native customization](./ios/RNVideoEditorSDK.h). Please refer to [our documentation](https://docs.videoeditorsdk.com?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native) for more details on native customization.
+For configuring and customizing VideoEditor SDK beyond these options exposed to JavaScript the iOS bridge provides an [interface for native customization](./ios/RNVideoEditorSDK.h). Please refer to [our documentation](https://img.ly/docs/vesdk?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native) for more details on native customization.
 
 ## Example
 
@@ -166,9 +176,9 @@ Please see our [example project](https://github.com/imgly/vesdk-react-native-dem
 
 ## License Terms
 
-Make sure you have a [commercial license](https://account.photoeditorsdk.com/pricing?product=vesdk&?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native) for VideoEditor SDK before releasing your app.
+Make sure you have a [commercial license](https://img.ly/pricing?product=vesdk&?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native) for VideoEditor SDK before releasing your app.
 A commercial license is required for any app or service that has any form of monetization: This includes free apps with in-app purchases or ad supported applications. Please contact us if you want to purchase the commercial license.
 
 ## Support and License
 
-Use our [service desk](https://support.videoeditorsdk.com) for bug reports or support requests. To request a commercial license, please use the [license request form](https://account.photoeditorsdk.com/pricing?product=vesdk&?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native) on our website.
+Use our [service desk](https://support.img.ly) for bug reports or support requests. To request a commercial license, please use the [license request form](https://img.ly/pricing?product=vesdk&?utm_campaign=Projects&utm_source=Github&utm_medium=VESDK&utm_content=React-Native) on our website.

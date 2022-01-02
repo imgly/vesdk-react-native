@@ -52,7 +52,7 @@ declare class VESDK {
     configuration?: Configuration,
     serialization?: object,
     videoSize?: Size
-  ): Promise<VideoEditorResult>
+  ): Promise<VideoEditorResult | null>
 
   /**
    * Unlock VideoEditor SDK with a license.

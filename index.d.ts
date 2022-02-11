@@ -24,10 +24,8 @@ interface Size {
 declare class VESDK {
   /**
    * Modally present a video editor.
-   * @note Edited videos from remote resources can be previewed in the editor but their export will
-   * fail! Remote video resources are currently supported for debugging purposes only, e.g., when
-   * loading videos with `require('./video.mp4')` for debug builds static video assets will be
-   * resolved to remote URLs served by the development packager.
+   * @note Remote resources are not optimized and therefore should be downloaded
+   * in advance and then passed to the editor as local resources.
    *
    * @param {AssetURI | [AssetURI] | {uri: string}} video The source of the video to be edited.
    * Can be either an URI (local only), an object with a member `uri`, or an asset reference

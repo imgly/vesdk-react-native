@@ -7,8 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import com.facebook.react.bridge.*
-import com.facebook.react.modules.core.PermissionAwareActivity
-import com.facebook.react.modules.core.PermissionListener
 import ly.img.android.IMGLY
 import ly.img.android.VESDK
 import ly.img.android.pesdk.VideoEditorSettingsList
@@ -16,7 +14,6 @@ import ly.img.android.pesdk.backend.model.state.LoadSettings
 import ly.img.android.pesdk.backend.model.state.manager.SettingsList
 import ly.img.android.pesdk.kotlin_extension.continueWithExceptions
 import ly.img.android.pesdk.ui.activity.VideoEditorBuilder
-import ly.img.android.pesdk.ui.utils.PermissionRequest
 import ly.img.android.pesdk.utils.MainThreadRunnable
 import ly.img.android.pesdk.utils.SequenceRunnable
 import ly.img.android.pesdk.utils.UriHelper
@@ -30,8 +27,9 @@ import ly.img.android.pesdk.backend.model.EditorSDKResult
 import ly.img.android.pesdk.backend.model.state.VideoCompositionSettings
 import ly.img.android.serializer._3.IMGLYFileReader
 import ly.img.android.serializer._3.IMGLYFileWriter
+import java.util.UUID
 
-class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener, PermissionListener {
+class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener {
     companion object {
         // This number must be unique. It is public to allow client code to change it if the same value is used elsewhere.
         var EDITOR_RESULT_ID = 29065
@@ -80,9 +78,9 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                                         }
                                         when (serializationConfig.exportType) {
                                             SerializationExportType.FILE_URL -> {
-                                                 val uri = serializationConfig.filename?.let { 
-                                                    Uri.parse(it)
-                                                } ?: Uri.fromFile(File.createTempFile("serialization", ".json"))
+                                                val uri = serializationConfig.filename?.let {
+                                                    Uri.parse("$it.json")
+                                                } ?: Uri.fromFile(File.createTempFile("serialization-" + UUID.randomUUID().toString(), ".json"))
                                                 Encoder.createOutputStream(uri).use { outputStream -> 
                                                     IMGLYFileWriter(settingsList).writeJson(outputStream)
                                                 }
@@ -142,9 +140,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
             readSerialisation(settingsList, serialization, false)
 
-            if (checkPermissions()) {
-                startEditor(settingsList)
-            }
+            startEditor(settingsList)
         } else {
             promise.reject("VESDK", "The video editor is only available in Android 4.3 and later.")
         }
@@ -192,9 +188,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
             }
 
             readSerialisation(settingsList, serialization, false)
-            if (checkPermissions()) {
-                startEditor(settingsList)
-            }
+            startEditor(settingsList)
         } else {
             promise.reject("VESDK", "The video editor is only available in Android 4.3 and later.")
         }
@@ -223,23 +217,6 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         return LoadSettings.compositionSource(height.toInt(), width.toInt(), 60)
     }
 
-    private fun checkPermissions(): Boolean {
-        (currentActivity as? PermissionAwareActivity)?.also {
-            var haveAllPermissions = true
-            for (permission in PermissionRequest.NEEDED_EDITOR_PERMISSIONS) {
-                if (it.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                    haveAllPermissions = false
-                }
-            }
-            if (!haveAllPermissions) {
-                it.requestPermissions(PermissionRequest.NEEDED_EDITOR_PERMISSIONS, 0, this)
-                return false
-            }
-        }
-
-        return true
-    }
-
     private fun readSerialisation(settingsList: SettingsList, serialization: String?, readImage: Boolean) {
         if (serialization != null) {
             skipIfNotExists {
@@ -253,13 +230,6 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
     private fun startEditor(settingsList: VideoEditorSettingsList?) {
         val currentActivity = this.currentActivity ?: throw RuntimeException("Can't start the Editor because there is no current activity")
         if (settingsList != null) {
-            (currentActivity as? PermissionAwareActivity)?.also {
-                for (permission in PermissionRequest.NEEDED_EDITOR_PERMISSIONS) {
-                    if (it.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                        return
-                    }
-                }
-            }
             MainThreadRunnable {
                 VideoEditorBuilder(currentActivity)
                   .setSettingsList(settingsList)
@@ -366,9 +336,4 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
     }
 
     override fun getName() = "RNVideoEditorSDK"
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray): Boolean {
-        PermissionRequest.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        startEditor(currentSettingsList)
-        return false
-    }
 }

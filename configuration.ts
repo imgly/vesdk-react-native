@@ -144,6 +144,45 @@ export interface Configuration {
   }
 
   /**
+   * Global watermark options.
+   */
+  watermark?: {
+    /**
+     * Input image for the watermark. No additional processing is performed on the image.
+     * Transparency must be supported by the file itself.
+     * If `null` no watermark will be applied.     
+     * @note If the watermark is the only editing operation to be performed, `export.force` option
+     * must be enabled for the change to be applied. 
+     * @example // Defaults to:
+     * null     
+     */
+    watermarkURI?: AssetURI;
+    /**
+     * The relative size of the watermark.
+     * This value is measured in relation to the smaller side of the transformed image/video that the user is editing
+     * and the longer side of the watermark image.
+     * @note Values outside (0.0, 1.0) will be clamped.
+     * @example // Defaults to:
+     * 0.2
+     */
+    size?: number;
+    /**
+     * The relative spacing between the edges of the image/video and the watermark.
+     * This value is measured in relation to the smaller side of the transformed image/video that the user is editing. 
+     * @note Values outside (0.0, 0.5) will be clamped.
+     * @example // Defaults to:
+     * 0.05.
+     */
+    inset?: number;
+    /**
+     * It defines the layout of the watermark inside the canvas. 
+     * @example // Defaults to:
+     * AlignmentMode.TOP_RIGHT
+     */
+    alignment?: AlignmentMode
+  }
+
+  /**
    * The menu items (or tools) to display in the main menu.
    * @example // Defaults to:
    * [Tool.COMPOSITION, Tool.TRANSFORM, Tool.FILTER, Tool.ADJUSTMENT, Tool.FOCUS, Tool.STICKER, Tool.TEXT, Tool.TEXT_DESIGN, Tool.OVERLAY, Tool.FRAME, Tool.BRUSH]
@@ -713,6 +752,14 @@ export interface Configuration {
      * [1, 1, 1, 1]
      */
     defaultTextColor?: Color;
+    /**
+     * Whether the user can use emojis as text input.
+     * @note Emojis are not cross-platform compatible. If you use the serialization feature to share edits
+     * across different platforms emojis will be renderd with the system's local set of emojis and will appear differently.
+     * @example // Defaults to:
+     * false
+     */
+    allowEmojis?: boolean;
   }
 
   /**
@@ -988,6 +1035,14 @@ export interface Configuration {
      * If some relative path is chosen it will be created in a temporary system directory and overwritten
      * if the corresponding file already exists. If the value is `null` an new temporary file will be
      * created for every export.
+     * @note Please make sure that the provided `filename` is valid for the different devices and that
+     * your application has the corresponding access rights to write to the desired location. For Android,
+     * you will want to make sure to set this inside one of the directories conforming to scoped storage:
+     * - DCIM/
+     * - Pictures/
+     * 
+     * For Videos you can additionally use:
+     *  - Movies/
      * @example // Defaults to:
      * null
      */
@@ -1019,12 +1074,12 @@ export interface Configuration {
        */
       exportType?: SerializationExportType;
       /**
-       * The filename for the exported serialization data if the `exportType` is `SerializationExportType.FILE_URL`.
+       * The file URI for the exported serialization data if the `exportType` is `SerializationExportType.FILE_URL`.
        * The filename extension for JSON will be automatically added.
-       * It can be an absolute path or file URL or a relative path.
-       * If some relative path is chosen it will be created in a temporary system directory and overwritten
-       * if the corresponding file already exists. If the value is `null` an new temporary file will be
-       * created for every export based on the filename for the exported image or video data.
+       * If the value is `null` an new temporary file will be created for every export based on the filename for 
+       * the exported image or video data.
+       * @note Please make sure that the provided `filename` is a valid file URI for the different devices and that
+       * your application has the corresponding access rights to write to the desired location.
        * @example // Defaults to:
        * null
        */
@@ -1222,6 +1277,15 @@ export enum FrameTileMode {
   STRETCH = "stretch",
 }
 
+/** An alignment mode. */
+export enum AlignmentMode {
+  CENTER = "center",
+  TOP_LEFT = "top-left",
+  TOP_RIGHT = "top-right",
+  BOTTOM_LEFT = "bottom-left",
+  BOTTOM_RIGHT = "bottom-right"
+}
+
 /** A canvas action. */
 export enum CanvasAction {
   UNDO = "undo",
@@ -1380,10 +1444,8 @@ export interface VideoClip extends MediaItem {
    */
   thumbnailURI?: AssetURI;
   /** A URI for the video clip.
-   * @note Video clips from remote resources can be previewed in the editor but their export will
-   * fail! Remote video resources are currently supported for debugging purposes only, e.g., when
-   * loading video clips with `require('./video.mp4')` for debug builds static video assets will be
-   * resolved to remote URLs served by the development packager.
+   * @note Remote resources are not optimized and therefore should be downloaded
+   * in advance and then passed to the editor as local resources.
    */
   videoURI: AssetURI;
 }
@@ -1421,10 +1483,8 @@ export interface AudioClip extends MediaItem {
    */
   duration?: number;
   /** A URI for the audio clip.
-   * @note Audio clips from remote resources can be previewed in the editor but their export will
-   * fail! Remote audio resources are currently supported for debugging purposes only, e.g., when
-   * loading audio clips with `require('./audio.mp3')` for debug builds static audio assets will be
-   * resolved to remote URLs served by the development packager.
+   * @note Remote resources are not optimized and therefore should be downloaded
+   * in advance and then passed to the editor as local resources.
    */
   audioURI: AssetURI;
 }

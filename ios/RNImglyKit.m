@@ -51,6 +51,13 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     }
   }
 #endif
+  
+  
+  [VESDK setLocalizationDictionary: @{
+    @"ja": @{
+      @"vesdk_trim_title_name": @"長さ調整"
+    }
+  }];
 
   __block NSError *error = nil;
   NSData *serializationData = nil;

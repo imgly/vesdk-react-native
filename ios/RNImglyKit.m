@@ -53,10 +53,17 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
 #endif
   
   
-  [VESDK setLocalizationDictionary: @{
+  [PESDK setLocalizationDictionary: @{
     @"ja": @{
-      @"vesdk_trim_title_name": @"長さ調整"
+      @"pesdk_trim_title_name": @"長さ調整"
     }
+  }];
+  
+  [PESDK setBundleImageBlock:^UIImage * _Nullable(NSString * _Nonnull imageName) {
+    if ([imageName isEqualToString:@"imgly_icon_save"]) {
+      return [UIImage imageNamed:@"imgly_approve_44pt"];
+    }
+    return nil;
   }];
 
   __block NSError *error = nil;

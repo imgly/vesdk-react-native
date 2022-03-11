@@ -51,17 +51,21 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     }
   }
 #endif
-  
-  
+
+
   [PESDK setLocalizationDictionary: @{
     @"ja": @{
-      @"pesdk_trim_title_name": @"長さ調整"
+      @"pesdk_trim_title_name": @"長さ調整",
+      @"pesdk_transform_title_name": @"調整",
+      @"pesdk_transform_button_reset": @"リセット",
+      @"pesdk_transform_asset_freeCrop": @"カスタム",
+      @"pesdk_transform_asset_square": @"正方形"
     }
   }];
-  
+
   [PESDK setBundleImageBlock:^UIImage * _Nullable(NSString * _Nonnull imageName) {
     if ([imageName isEqualToString:@"imgly_icon_save"]) {
-      return [UIImage imageNamed:@"imgly_approve_44pt"];
+      return [UIImage imageNamed:@"imgly_icon_approve_44pt"];
     }
     return nil;
   }];

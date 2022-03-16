@@ -55,12 +55,25 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
 
   [PESDK setLocalizationDictionary: @{
     @"ja": @{
+      @"pesdk_editor_title_name": @"編集",
       @"pesdk_trim_title_name": @"長さ調整",
       @"pesdk_transform_title_name": @"調整",
       @"pesdk_transform_button_reset": @"リセット",
       @"pesdk_transform_asset_freeCrop": @"カスタム",
-      @"pesdk_transform_asset_square": @"正方形"
+      @"pesdk_transform_asset_square": @"正方形",
+      @"pesdk_editor_title_exportingVideoSpinner": @"書き出し中",
+      @"pesdk_common_button_cancel": @"キャンセル"
     }
+  }];
+
+  [PESDK setBundleImageBlock:^UIImage * _Nullable(NSString * _Nonnull imageName) {
+    if ([imageName isEqualToString:@"imgly_icon_save"]) {
+      NSURL *url = [NSBundle.imglyBundle URLForResource:@"imgly_icon_approve_44pt" withExtension:@"png"];
+      NSData *data = [NSData dataWithContentsOfURL:url];
+      UIImage *image = [UIImage imageWithData:data];
+      return image;
+    }
+    return nil;
   }];
 
   __block NSError *error = nil;

@@ -71,7 +71,12 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
       NSURL *url = [NSBundle.imglyBundle URLForResource:@"imgly_icon_approve_44pt@3x" withExtension:@"png"];
       NSData *data = [NSData dataWithContentsOfURL:url];
       UIImage *image = [UIImage imageWithData:data];
-      UIImage *sized = [image prepareThumbnail:of size:CGSize(width: 44, height: 44)];
+
+      [image prepareThumbnailOfSize:CGSize(width: 44, height: 44) completionHandler:^(UIImage *thumbnail) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIImage *sized = thumbnail;
+        });
+      }];
       return sized;
     }
     return nil;

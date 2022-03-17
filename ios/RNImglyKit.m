@@ -70,7 +70,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     if ([imageName isEqualToString:@"imgly_icon_save"]) {
       NSURL *url = [NSBundle.imglyBundle URLForResource:@"imgly_icon_approve_44pt@3x" withExtension:@"png"];
       NSData *data = [NSData dataWithContentsOfURL:url];
-      NSInteger *scale = [UIScreen mainScreen].scale;
+      CGFloat *scale = [UIScreen mainScreen].scale;
       UIImage *image = [UIImage imageWithData:data scale:scale];
       return image;
     }

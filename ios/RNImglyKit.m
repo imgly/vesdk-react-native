@@ -72,7 +72,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
       NSData *data = [NSData dataWithContentsOfURL:url];
       UIImage *image = [UIImage imageWithData:data];
 
-      UIImage *sized = nil;
+      __block UIImage *sized = nil;
       [image prepareThumbnailOfSize:CGSizeMake(44, 44) completionHandler:^(UIImage *thumbnail) {
         dispatch_async(dispatch_get_main_queue(), ^{
           sized = thumbnail;

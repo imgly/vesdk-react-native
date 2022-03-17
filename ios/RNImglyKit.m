@@ -68,17 +68,10 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
 
   [PESDK setBundleImageBlock:^UIImage * _Nullable(NSString * _Nonnull imageName) {
     if ([imageName isEqualToString:@"imgly_icon_save"]) {
-      NSURL *url = [NSBundle.imglyBundle URLForResource:@"imgly_icon_approve_44pt@3x" withExtension:@"png"];
+      NSURL *url = [NSBundle.imglyBundle URLForResource:@"imgly_icon_approve_44pt" withExtension:@"png"];
       NSData *data = [NSData dataWithContentsOfURL:url];
       UIImage *image = [UIImage imageWithData:data];
-
-      __block UIImage *sized = nil;
-      [image prepareThumbnailOfSize:CGSizeMake(44, 44) completionHandler:^(UIImage *thumbnail) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          sized = thumbnail;
-        });
-      }];
-      return sized;
+      return image;
     }
     return nil;
   }];

@@ -57,7 +57,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     @"ja": @{
       @"pesdk_editor_title_name": @"編集",
       @"pesdk_trim_title_name": @"長さ調整",
-      @"pesdk_transform_title_name": @"調整",
+      @"pesdk_transform_title_name": @"切り抜き",
       @"pesdk_transform_button_reset": @"リセット",
       @"pesdk_transform_asset_freeCrop": @"カスタム",
       @"pesdk_transform_asset_square": @"正方形",
@@ -68,7 +68,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
 
   [PESDK setBundleImageBlock:^UIImage * _Nullable(NSString * _Nonnull imageName) {
     if ([imageName isEqualToString:@"imgly_icon_save"]) {
-      NSURL *url = [NSBundle.imglyBundle URLForResource:@"imgly_icon_approve_44pt" withExtension:@"png"];
+      NSURL *url = [NSBundle.imglyBundle URLForResource:@"imgly_icon_approve_44pt@3x" withExtension:@"png"];
       NSData *data = [NSData dataWithContentsOfURL:url];
       UIImage *image = [UIImage imageWithData:data];
       return image;

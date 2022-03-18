@@ -72,14 +72,6 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
       int scaleInt = (int) roundf(scale);
       NSString *filename = @"imgly_icon_approve_44pt";
 
-      /*
-      CGSize *size = 44
-      UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
-      UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext*_Nonnull myContext) {
-         [self drawInRect:(CGRect) {.origin = CGPointZero, .size = size}];
-      }];
-       */
-
       if (scaleInt != 1){
         NSString *scaleString = [NSString stringWithFormat:@"%d",scaleInt];
         filename = [filename stringByAppendingString:@"@"];
@@ -89,9 +81,6 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
 
       NSURL *url = [NSBundle.imglyBundle URLForResource:filename withExtension:@"png"];
       NSData *data = [NSData dataWithContentsOfURL:url];
-      /*
-        UIImage *result = [UIImage imageWithData:data];
-       */
       UIImage *image = [UIImage imageWithData:data scale:scale];
       return image;
     }

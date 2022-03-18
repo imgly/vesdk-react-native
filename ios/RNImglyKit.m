@@ -71,12 +71,15 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
       CGFloat scale = [UIScreen mainScreen].scale;
       int scaleInt = (int) roundf(scale);
       NSString *filename = @"imgly_icon_approve_44pt";
+
+      /*
       if (scaleInt != 1){
         NSString *scaleString = [NSString stringWithFormat:@"%d",scaleInt];
         filename = [filename stringByAppendingString:@"@"];
         filename = [filename stringByAppendingString:scaleString];
         filename = [filename stringByAppendingString:@"x"];
       }
+       */
       NSURL *url = [NSBundle.imglyBundle URLForResource:filename withExtension:@"png"];
       NSData *data = [NSData dataWithContentsOfURL:url];
       /*

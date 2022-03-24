@@ -57,7 +57,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     @"ja": @{
       @"pesdk_editor_title_name": @"編集",
       @"pesdk_editor_title_exportingVideoSpinner": @"書き出し中",
-      @"pesdk_common_button_cancel": @"キャンセル"
+      @"pesdk_common_button_cancel": @"キャンセル",
 
       @"pesdk_trim_title_name": @"長さ調整",
 

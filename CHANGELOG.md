@@ -1,3 +1,16 @@
+## [2.13.0]
+
+### Changed
+
+* 🚨 With this version you might need to create symlinks when using Android Gradle Plugin version `4.x`. Please refer to the new [known issues](https://github.com/imgly/vesdk-react-native#known-issues) section of the README for details.
+* 🚨 This version requires `minSdkVersion` `21` for Android. Please refer to the new step 3 in the [getting started](https://github.com/imgly/vesdk-react-native#android) section of the README for instructions on how to adjust it.
+* [react-native-videoeditorsdk] Raised minimum VideoEditor SDK for Android version to 10.0.1. See the [changelog](https://github.com/imgly/vesdk-android-demo/blob/master/CHANGELOG.md) for more information.
+* [react-native-photoeditorsdk] Raised minimum PhotoEditor SDK for Android version to 10.0.1. See the [changelog](https://github.com/imgly/pesdk-android-demo/blob/master/CHANGELOG.md) for more information.
+
+### Added
+
+* [react-native-imglysdk] Added support to specify a custom `buildToolsVersion`, `minSdkVersion`, `compileSdkVersion`, `targetSdkVersion`, and `kotlinGradlePluginVersion` for Android with the Expo config plugin.
+
 ## [2.12.0]
 
 ### Changed

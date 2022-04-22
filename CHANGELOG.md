@@ -1,3 +1,9 @@
+## [2.13.1]
+
+### Fixed
+
+* Fixed enabling serialization would crash the application on Android when exporting.
+
 ## [2.13.0]
 
 ### Changed

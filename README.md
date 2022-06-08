@@ -23,7 +23,7 @@ Check out our [video tutorial](https://img.ly/blog/a-photo-and-video-editor-for-
 
 ### Known Issues
 
-With version `2.13.0`, we recommend using `compileSdkVersion` not lower than `31.0.0` for Android. However, this might interfere with your application's Android Gradle Plugin version if this is set to `4.x`.
+With version `2.13.0`, we recommend using `compileSdkVersion` not lower than `31` for Android. However, this might interfere with your application's Android Gradle Plugin version if this is set to `4.x`.
 
 If you don't use a newer Android Gradle Plugin version, e.g., by updating at least to RN 0.68.0, you'll most likely encounter a build error similar to:
 ```
@@ -77,7 +77,7 @@ In order to use this module with the Expo CLI you can make use of our integrated
          "react-native-imglysdk",
          {
            "android": {
-             "version": "10.0.1",
+             "version": "10.1.1",
              "modules": [
                "ui:core",
                "ui:transform",
@@ -149,11 +149,11 @@ For older React Native versions autolinking is not available and VideoEditor SDK
        }
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.32"
-           classpath 'ly.img.android.sdk:plugin:10.0.1'
+           classpath 'ly.img.android.sdk:plugin:10.1.1'
        }
    }
    ```
-   In order to update VideoEditor SDK for Android replace the version string `10.0.1` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   In order to update VideoEditor SDK for Android replace the version string `10.1.1` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 2. Still in the `android/build.gradle` file (**not** `android/app/build.gradle`), add these lines at the bottom:
 
@@ -203,6 +203,7 @@ For older React Native versions autolinking is not available and VideoEditor SDK
            include 'ui:video-library'
            include 'ui:video-composition'
            include 'ui:audio-composition'
+           include 'ui:giphy-sticker'
 
            // This module is big, remove the serializer if you don't need that feature.
            include 'backend:serializer'

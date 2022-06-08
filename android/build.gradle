@@ -20,7 +20,7 @@ imglyConfig {
     }
 }
 
-def MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION = "10.0.1"
+def MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION = "10.1.1"
 
 task checkVersion {
     if (imglyConfig.convertToVersionNumber(imglyConfig.getVersion()) < imglyConfig.convertToVersionNumber(MIN_LY_IMG_ANDROID_SDK_PLUGIN_VERSION)) {

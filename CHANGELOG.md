@@ -1,3 +1,17 @@
+## [2.14.0]
+
+### Added
+
+* [react-native-videoeditorsdk] Added implementation and documentation for GIPHY sticker integration.
+
+### Fixed
+
+* [react-native-videoeditorsdk] Fixed `VESDK.openEditor` return type declaration and API documentation to return `Promise<VideoEditorResult | null>` instead of just `Promise<VideoEditorResult>`.
+* [react-native-videoeditorsdk] Fixed height and width of specified composition size would be flipped on Android.
+* [react-native-photoeditorsdk] Fixed `PESDK.openEditor` return type declaration and API documentation to return `Promise<PhotoEditorResult | null>` instead of just `Promise<PhotoEditorResult>`.
+* [react-native-photoeditorsdk] Fixed deprecation warning for `RCTBridge.imageLoader` on iOS.
+
+
 ## [2.13.1]
 
 ### Fixed

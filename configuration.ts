@@ -576,7 +576,7 @@ export interface Configuration {
      *   ]},
      * ]
      */
-    categories?: (StickerCategory | ExistingStickerCategory)[];
+    categories?: (StickerCategory | ExistingStickerCategory | ExistingStickerProviderCategory)[];
     /**
      * Defines all available colors that can be applied to stickers with a `tintMode` other than `TintMode.NONE`.
      * The color pipette is always added.
@@ -1569,6 +1569,38 @@ export interface StickerCategory extends NamedItem {
    * null
    */
   items?: (Sticker | ExistingItem)[];
+}
+
+/** An existing sticker provider category. */
+export interface ExistingStickerProviderCategory extends ExistingItem {
+  /**
+   * The used sticker provider that must match the category's identifier.
+   */
+   provider: GiphyStickerProvider;
+}
+
+/**
+ * A GIPHY sticker provider.
+ * @note This sticker provider requires to use the identifier `imgly_sticker_category_giphy` for its `ExistingStickerProviderCategory`.
+ */
+export interface GiphyStickerProvider {
+  /**
+   * The key used to authorize API requests, obtained from GIPHY.
+   */
+  apiKey: string;
+  /**
+   * The default language for regional content in 2-letter ISO 639-1 language code.
+   * If `null` the language setting of the current locale is used.  
+   * @example // Defaults to:
+   * null
+   */
+  language?: string;
+  /**
+   * The audience category used for content filtering. Available values are `"g"`, `"pg"`, `"pg-13"`, `"r"`.
+   * @example // Defaults to:
+   * "g"
+   */
+  rating?: string;
 }
 
 /** A sticker. */

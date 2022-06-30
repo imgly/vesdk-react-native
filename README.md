@@ -19,6 +19,12 @@
 
 Check out our [video tutorial](https://img.ly/blog/a-photo-and-video-editor-for-your-react-native-apps/) for a step-by-step integration guide which also details advanced SDK features, such as serializing and reusing previously applied editing operations.
 
+## System requirements
+
+- React Native: 0.60
+- iOS: 13
+- Android: 5 (SDK 21)
+
 ## Getting started
 
 ### Known Issues
@@ -100,7 +106,9 @@ In order to use this module with the Expo CLI you can make use of our integrated
    
    **Please note that the `react-native-imglysdk` module manages both VideoEditor SDK as well as PhotoEditor SDK so you only need to add the Expo config plugin once even when using both SDKs.**
 
-3. The changes will be applied on `expo prebuild` or during the prebuild phase of `eas build`.
+3. From version `2.15.0` the iOS deployment target needs to be set to at least iOS 13. You can use the `expo-build-properties` config plugin for this. Please refer to the [official Expo docs](https://docs.expo.dev/versions/v45.0.0/sdk/build-properties/).
+
+4. The changes will be applied on `expo prebuild` or during the prebuild phase of `eas build`.
 
 For further information on how to integrate Expo config plugins please also refer to the official [docs](https://docs.expo.dev/guides/config-plugins/#using-a-plugin-in-your-app).
 
@@ -219,6 +227,7 @@ For older React Native versions autolinking is not available and VideoEditor SDK
 
            include 'backend:sticker-animated'
            include 'backend:sticker-smart'
+           include 'backend:background-removal'
        }
    }
    ```

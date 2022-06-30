@@ -1,3 +1,15 @@
+## [2.15.0]
+
+### Changed
+
+* 🚨 Bumped iOS deployment target to 13.0.
+* [react-native-videoeditorsdk] Raised minimum VideoEditor SDK for iOS version to 11.1.0. See the [changelog](https://github.com/imgly/vesdk-ios-build/blob/master/CHANGELOG.md) for more information.
+* [react-native-photoeditorsdk] Raised minimum PhotoEditor SDK for iOS version to 11.1.0. See the [changelog](https://github.com/imgly/pesdk-ios-build/blob/master/CHANGELOG.md) for more information.
+
+### Added
+
+* Added implementation and documentation for background removal.
+
 ## [2.14.0]
 
 ### Added

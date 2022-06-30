@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.homepage     = package['homepage']
   s.license      = { :type => package['license'], :file => package['licenseFilename'] }
   s.author       = { package['author']['name'] => package['author']['email'] }
-  s.platform     = :ios, '9.0'
+  s.platform     = :ios, '13.0'
   s.source       = { :git => package['repository']['url'], :tag => "#{s.version}" }
   s.source_files = 'ios/**/*.{h,m,swift}'
   s.public_header_files = ['ios/RNVideoEditorSDK.h', 'ios/RNImglyKit.h']
@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'React'
   s.dependency 'React-RCTImage'
-  s.dependency 'VideoEditorSDK', '~> 10.30'
+  s.dependency 'VideoEditorSDK', '~> 11.1'
 end

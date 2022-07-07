@@ -27,11 +27,13 @@ export interface Configuration {
   /**
    * Defines all allowed actions for the main screen that are displayed as overlay buttons on the canvas.
    * Only buttons for allowed actions are visible.
+   * @note The `CanvasAction.REMOVE_BACKGROUND` action is only shown when editing photos where a person could be detected. This feature is only supported on devices running iOS 15+.
    * @note The `CanvasAction.SOUND_ON_OFF` and `CanvasAction.PLAY_PAUSE` action is only shown when editing videos.
    * @example // Defaults to:
    * [CanvasAction.SOUND_ON_OFF, CanvasAction.PLAY_PAUSE, CanvasAction.UNDO, CanvasAction.REDO]
    */
   mainCanvasActions?: Array<
+    CanvasAction.REMOVE_BACKGROUND |
     CanvasAction.SOUND_ON_OFF |
     CanvasAction.PLAY_PAUSE |
     CanvasAction.UNDO |
@@ -576,7 +578,7 @@ export interface Configuration {
      *   ]},
      * ]
      */
-    categories?: (StickerCategory | ExistingStickerCategory)[];
+    categories?: (StickerCategory | ExistingStickerCategory | ExistingStickerProviderCategory)[];
     /**
      * Defines all available colors that can be applied to stickers with a `tintMode` other than `TintMode.NONE`.
      * The color pipette is always added.
@@ -603,8 +605,9 @@ export interface Configuration {
     colors?: ColorPalette;
     /**
      * Defines all allowed actions for the sticker tool menu. Only buttons for allowed actions are visible and shown in the given order.
+     * @note The `StickerAction.REMOVE_BACKGROUND` action is only shown for personal and external (non-animated) stickers where a person could be detected. This feature is only supported on devices running iOS 15+.
      * @example // Defaults to:
-     * [StickerAction.REPLACE, StickerAction.OPACITY, StickerAction.COLOR]
+     * [StickerAction.REPLACE, StickerAction.OPACITY, StickerAction.COLOR, StickerAction.REMOVE_BACKGROUND]
      */
     actions?: StickerAction[];
     /**
@@ -1297,6 +1300,7 @@ export enum CanvasAction {
   INVERT = "invert",
   SOUND_ON_OFF = "soundonoff",
   PLAY_PAUSE = "playpause",
+  REMOVE_BACKGROUND = "removebackground",
 }
 
 /** A sticker action. */
@@ -1308,6 +1312,7 @@ export enum StickerAction {
   SATURATION = "saturation",
   REPLACE = "replace",
   OPACITY = "opacity",
+  REMOVE_BACKGROUND = "removebackground",
 }
 
 /** A text action. */
@@ -1569,6 +1574,38 @@ export interface StickerCategory extends NamedItem {
    * null
    */
   items?: (Sticker | ExistingItem)[];
+}
+
+/** An existing sticker provider category. */
+export interface ExistingStickerProviderCategory extends ExistingItem {
+  /**
+   * The used sticker provider that must match the category's identifier.
+   */
+   provider: GiphyStickerProvider;
+}
+
+/**
+ * A GIPHY sticker provider.
+ * @note This sticker provider requires to use the identifier `imgly_sticker_category_giphy` for its `ExistingStickerProviderCategory`.
+ */
+export interface GiphyStickerProvider {
+  /**
+   * The key used to authorize API requests, obtained from GIPHY.
+   */
+  apiKey: string;
+  /**
+   * The default language for regional content in 2-letter ISO 639-1 language code.
+   * If `null` the language setting of the current locale is used.  
+   * @example // Defaults to:
+   * null
+   */
+  language?: string;
+  /**
+   * The audience category used for content filtering. Available values are `"g"`, `"pg"`, `"pg-13"`, `"r"`.
+   * @example // Defaults to:
+   * "g"
+   */
+  rating?: string;
 }
 
 /** A sticker. */

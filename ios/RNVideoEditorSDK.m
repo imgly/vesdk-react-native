@@ -29,6 +29,13 @@ static RNVESDKWillPresentBlock _willPresentVideoEditViewController = nil;
   _willPresentVideoEditViewController = willPresentBlock;
 }
 
+- (void)handleError:(nonnull PESDKVideoEditViewController *)videoEditViewController code:(nullable NSString *)code message:(nullable NSString *)message error:(nullable NSError *)error {
+  RCTPromiseRejectBlock reject = self.reject;
+  [self dismiss:videoEditViewController animated:YES completion:^{
+    reject(code, message, error);
+  }];
+}
+
 - (void)present:(nonnull PESDKVideo *)video withConfiguration:(nullable NSDictionary *)dictionary andSerialization:(nullable NSDictionary *)state
         resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
 {
@@ -113,49 +120,49 @@ RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)request
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    NSMutableArray<AVAsset *> *assets = [NSMutableArray new];
+  NSMutableArray<AVAsset *> *assets = [NSMutableArray new];
 
-    if (requests.count > 0) {
-        for (NSURLRequest *request in requests) {
-            if (request.URL.isFileURL) {
-              if (![[NSFileManager defaultManager] fileExistsAtPath:request.URL.path]) {
-                reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
-                return;
-              }
-            }
-
-            AVAsset *asset = [AVAsset assetWithURL:request.URL];
-            [assets addObject:asset];
+  if (requests.count > 0) {
+    for (NSURLRequest *request in requests) {
+      if (request.URL.isFileURL) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:request.URL.path]) {
+          reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
+          return;
         }
+      }
+
+      AVAsset *asset = [AVAsset assetWithURL:request.URL];
+      [assets addObject:asset];
     }
+  }
 
-    PESDKVideo *video;
+  PESDKVideo *video;
 
-    if (CGSizeEqualToSize(videoSize, CGSizeZero)) {
-        if (assets.count == 0) {
-            RCTLogError(@"A video without assets must have a specific size.");
-            reject(RN_IMGLY.kErrorUnableToLoad, @"The editor requires a valid size when initialized without a video.", nil);
-            return;
-        }
-        video = [[PESDKVideo alloc] initWithAssets:assets];
-    } else {
-        if (videoSize.height <= 0 || videoSize.width <= 0) {
-            RCTLogError(@"Invalid video size: width and height must be greater than zero");
-            reject(RN_IMGLY.kErrorUnableToLoad, @"Invalid video size: width and height must be greater than zero", nil);
-            return;
-        }
-        if (assets.count == 0) {
-            video = [[PESDKVideo alloc] initWithSize:videoSize];
-        }
-        video = [[PESDKVideo alloc] initWithAssets:assets size:videoSize];
+  if (CGSizeEqualToSize(videoSize, CGSizeZero)) {
+    if (assets.count == 0) {
+      RCTLogError(@"A video without assets must have a specific size.");
+      reject(RN_IMGLY.kErrorUnableToLoad, @"The editor requires a valid size when initialized without a video.", nil);
+      return;
     }
+    video = [[PESDKVideo alloc] initWithAssets:assets];
+  } else {
+    if (videoSize.height <= 0 || videoSize.width <= 0) {
+      RCTLogError(@"Invalid video size: width and height must be greater than zero");
+      reject(RN_IMGLY.kErrorUnableToLoad, @"Invalid video size: width and height must be greater than zero", nil);
+      return;
+    }
+    if (assets.count == 0) {
+      video = [[PESDKVideo alloc] initWithSize:videoSize];
+    }
+    video = [[PESDKVideo alloc] initWithAssets:assets size:videoSize];
+  }
 
-    [self present:video withConfiguration:configuration andSerialization:state resolve:resolve reject:reject];
+  [self present:video withConfiguration:configuration andSerialization:state resolve:resolve reject:reject];
 }
 
 #pragma mark - PESDKVideoEditViewControllerDelegate
 
-- (void)videoEditViewController:(nonnull PESDKVideoEditViewController *)videoEditViewController didFinishWithVideoAtURL:(nullable NSURL *)url {
+- (void)videoEditViewControllerDidFinish:(nonnull PESDKVideoEditViewController *)videoEditViewController result:(nonnull PESDKVideoEditorResult *)result {
   NSError *error = nil;
   id serialization = nil;
 
@@ -171,17 +178,16 @@ RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)request
     }
   }
 
-  RCTPromiseResolveBlock resolve = self.resolve;
-  RCTPromiseRejectBlock reject = self.reject;
-  [self dismiss:videoEditViewController animated:YES completion:^{
-    if (error == nil) {
-      resolve(@{ @"video": (url != nil) ? url.absoluteString : [NSNull null],
-                 @"hasChanges": @(videoEditViewController.hasChanges),
+  if (error == nil) {
+    RCTPromiseResolveBlock resolve = self.resolve;
+    [self dismiss:videoEditViewController animated:YES completion:^{
+      resolve(@{ @"video": (result.output.url != nil) ? result.output.url.absoluteString : [NSNull null],
+                 @"hasChanges": @(result.status == VESDKVideoEditorStatusRenderedWithChanges),
                  @"serialization": (serialization != nil) ? serialization : [NSNull null] });
-    } else {
-      reject(RN_IMGLY.kErrorUnableToExport, [NSString RN_IMGLY_string:@"Unable to export video or serialization." withError:error], error);
-    }
-  }];
+    }];
+  } else {
+    [self handleError:videoEditViewController code:RN_IMGLY.kErrorUnableToExport message:[NSString RN_IMGLY_string:@"Unable to export video or serialization." withError:error] error:error];
+  }
 }
 
 - (void)videoEditViewControllerDidCancel:(nonnull PESDKVideoEditViewController *)videoEditViewController {
@@ -191,11 +197,8 @@ RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)request
   }];
 }
 
-- (void)videoEditViewControllerDidFailToGenerateVideo:(nonnull PESDKVideoEditViewController *)videoEditViewController {
-  RCTPromiseRejectBlock reject = self.reject;
-  [self dismiss:videoEditViewController animated:YES completion:^{
-    reject(RN_IMGLY.kErrorUnableToExport, @"Unable to generate video", nil);
-  }];
+- (void)videoEditViewControllerDidFail:(nonnull PESDKVideoEditViewController *)videoEditViewController error:(PESDKVideoEditorError *)error {
+  [self handleError:videoEditViewController code:RN_IMGLY.kErrorUnableToExport message:@"Unable to generate video" error:error];
 }
 
 @end

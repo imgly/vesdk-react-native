@@ -42,7 +42,7 @@ declare class VESDK {
    * This overrides the natural dimensions of the video(s) passed to the editor. All videos will
    * be fitted to the `videoSize` aspect by adding black bars on the left and right side or top and bottom.
    *
-   * @return {Promise<VideoEditorResult>} Returns a `VideoEditorResult` or `null` if the editor
+   * @return {Promise<VideoEditorResult | null>} Returns a `VideoEditorResult` or `null` if the editor
    * is dismissed without exporting the edited video.
    */
   static openEditor(
@@ -50,7 +50,7 @@ declare class VESDK {
     configuration?: Configuration,
     serialization?: object,
     videoSize?: Size
-  ): Promise<VideoEditorResult>
+  ): Promise<VideoEditorResult | null>
 
   /**
    * Unlock VideoEditor SDK with a license.

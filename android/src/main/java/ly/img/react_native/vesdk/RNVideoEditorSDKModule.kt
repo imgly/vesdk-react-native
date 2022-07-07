@@ -2,9 +2,7 @@ package ly.img.react_native.vesdk
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import com.facebook.react.bridge.*
 import ly.img.android.IMGLY
@@ -39,7 +37,6 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         reactContext.addActivityEventListener(this)
     }
 
-    private var currentSettingsList: VideoEditorSettingsList? = null
     private var currentPromise: Promise? = null
     private var currentConfig: Configuration? = null
 
@@ -68,15 +65,16 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                             val resultPath = data.resultUri
 
                             val serializationConfig = currentConfig?.export?.serialization
-                            val settingsList = data.settingsList
 
-                            val serialization: Any? = if (serializationConfig?.enabled == true) {
+                            var serialization: Any? = null
+                            if (serializationConfig?.enabled == true) {
+                                val settingsList = data.settingsList
                                 skipIfNotExists {
                                     settingsList.let { settingsList ->
                                         if (serializationConfig.embedSourceImage == true) {
                                             Log.i("ImgLySdk", "EmbedSourceImage is currently not supported by the Android SDK")
                                         }
-                                        when (serializationConfig.exportType) {
+                                        serialization = when (serializationConfig.exportType) {
                                             SerializationExportType.FILE_URL -> {
                                                 val uri = serializationConfig.filename?.let {
                                                     Uri.parse("$it.json")
@@ -95,12 +93,10 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                                             }
                                         }
                                     }
+                                    settingsList.release()
                                 } ?: run {
                                     Log.i("ImgLySdk", "You need to include 'backend:serializer' Module, to use serialisation!")
-                                    null
                                 }
-                            } else {
-                                null
                             }
 
                             currentPromise?.resolve(
@@ -123,75 +119,61 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
     @ReactMethod
     fun present(video: String, config: ReadableMap?, serialization: String?, promise: Promise) {
+        val configuration = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf())
+        val settingsList = VideoEditorSettingsList(configuration.export?.serialization?.enabled == true)
+        configuration.applyOn(settingsList)
+        currentConfig = configuration
+        currentPromise = promise
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            val settingsList = VideoEditorSettingsList()
-
-            currentSettingsList = settingsList
-            currentConfig = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf()).also {
-                it.applyOn(settingsList)
-            }
-            currentPromise = promise
-
-
-            settingsList.configure<LoadSettings> { loadSettings ->
-                loadSettings.source = retrieveURI(video)
-            }
-
-            readSerialisation(settingsList, serialization, false)
-
-            startEditor(settingsList)
-        } else {
-            promise.reject("VESDK", "The video editor is only available in Android 4.3 and later.")
+        settingsList.configure<LoadSettings> { loadSettings ->
+            loadSettings.source = retrieveURI(video)
         }
+
+        readSerialisation(settingsList, serialization, false)
+        startEditor(settingsList)
     }
 
     @ReactMethod
     fun presentComposition(videos: ReadableArray, config: ReadableMap?, serialization: String?, size: ReadableMap?, promise: Promise) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            val array = videos.toArrayList()
-            val videoArray = array.filterIsInstance<String>().takeIf { it.size == array.size } ?: arrayListOf()
-            val settingsList = VideoEditorSettingsList()
-            var source = resolveSize(size)
+        val array = videos.toArrayList()
+        val videoArray = array.filterIsInstance<String>().takeIf { it.size == array.size } ?: arrayListOf()
+        var source = resolveSize(size)
 
-            currentSettingsList = settingsList
-            currentConfig = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf()).also {
-                it.applyOn(settingsList)
-            }
-            currentPromise = promise
+        val configuration = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf())
+        val settingsList = VideoEditorSettingsList(configuration.export?.serialization?.enabled == true)
+        configuration.applyOn(settingsList)
+        currentConfig = configuration
+        currentPromise = promise
 
-            if (videoArray.count() > 0) {
-                if (source == null) {
-                    if (size != null) {
-                        promise.reject("VESDK", "Invalid video size: width and height must be greater than zero.")
-                        return
-                    }
-                    val video = videoArray.first()
-                    source = retrieveURI(video)
-                }
-
-                settingsList.configure<VideoCompositionSettings> { loadSettings ->
-                    videoArray.forEach {
-                        val resolvedSource = retrieveURI(it)
-                        loadSettings.addCompositionPart(VideoCompositionSettings.VideoPart(resolvedSource))
-                    }
-                }
-            } else {
-                if (source == null) {
-                    promise.reject("VESDK", "The editor requires a valid size when initialized without a video.")
+        if (videoArray.count() > 0) {
+            if (source == null) {
+                if (size != null) {
+                    promise.reject("VESDK", "Invalid video size: width and height must be greater than zero.")
                     return
                 }
+                val video = videoArray.first()
+                source = retrieveURI(video)
             }
 
-            settingsList.configure<LoadSettings> {
-                it.source = source
+            settingsList.configure<VideoCompositionSettings> { loadSettings ->
+                videoArray.forEach {
+                    val resolvedSource = retrieveURI(it)
+                    loadSettings.addCompositionPart(VideoCompositionSettings.VideoPart(resolvedSource))
+                }
             }
-
-            readSerialisation(settingsList, serialization, false)
-            startEditor(settingsList)
         } else {
-            promise.reject("VESDK", "The video editor is only available in Android 4.3 and later.")
+            if (source == null) {
+                promise.reject("VESDK", "The editor requires a valid size when initialized without a video.")
+                return
+            }
         }
+
+        settingsList.configure<LoadSettings> {
+            it.source = source
+        }
+
+        readSerialisation(settingsList, serialization, false)
+        startEditor(settingsList)
     }
 
     private fun retrieveURI(source: String) : Uri {
@@ -214,7 +196,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         if (height == 0.0 || width == 0.0) {
             return null
         }
-        return LoadSettings.compositionSource(height.toInt(), width.toInt(), 60)
+        return LoadSettings.compositionSource(width.toInt(), height.toInt(), 60)
     }
 
     private fun readSerialisation(settingsList: SettingsList, serialization: String?, readImage: Boolean) {
@@ -234,6 +216,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                 VideoEditorBuilder(currentActivity)
                   .setSettingsList(settingsList)
                   .startActivityForResult(currentActivity, EDITOR_RESULT_ID)
+                settingsList.release()
             }()
         }
     }

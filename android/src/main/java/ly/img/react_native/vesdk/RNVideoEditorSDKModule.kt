@@ -22,6 +22,8 @@ import org.json.JSONObject
 import java.io.File
 import ly.img.android.pesdk.backend.encoder.Encoder
 import ly.img.android.pesdk.backend.model.EditorSDKResult
+import ly.img.android.pesdk.backend.model.VideoPart
+import ly.img.android.pesdk.backend.model.state.LoadState
 import ly.img.android.pesdk.backend.model.state.VideoCompositionSettings
 import ly.img.android.serializer._3.IMGLYFileReader
 import ly.img.android.serializer._3.IMGLYFileWriter
@@ -39,11 +41,23 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
     private var currentPromise: Promise? = null
     private var currentConfig: Configuration? = null
+    private var resolveManually: Boolean = false
+    private var currentEditorUID: String = UUID.randomUUID().toString()
+    private var settingsLists: MutableMap<String, SettingsList> = mutableMapOf()
 
     @ReactMethod
     fun unlockWithLicense(license: String) {
         VESDK.initSDKWithLicenseData(license)
         IMGLY.authorize()
+    }
+
+    @ReactMethod
+    fun releaseTemporaryData(identifier: String) {
+        val settingsList = settingsLists[identifier]
+        if (settingsList != null) {
+            settingsList.release()
+            settingsLists.remove(identifier)
+        }
     }
 
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
@@ -67,45 +81,78 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                             val serializationConfig = currentConfig?.export?.serialization
 
                             var serialization: Any? = null
+                            val settingsList = data.settingsList
+
                             if (serializationConfig?.enabled == true) {
-                                val settingsList = data.settingsList
                                 skipIfNotExists {
                                     settingsList.let { settingsList ->
                                         if (serializationConfig.embedSourceImage == true) {
-                                            Log.i("ImgLySdk", "EmbedSourceImage is currently not supported by the Android SDK")
+                                            Log.i(
+                                                "ImgLySdk",
+                                                "EmbedSourceImage is currently not supported by the Android SDK"
+                                            )
                                         }
                                         serialization = when (serializationConfig.exportType) {
                                             SerializationExportType.FILE_URL -> {
                                                 val uri = serializationConfig.filename?.let {
                                                     Uri.parse("$it.json")
-                                                } ?: Uri.fromFile(File.createTempFile("serialization-" + UUID.randomUUID().toString(), ".json"))
-                                                Encoder.createOutputStream(uri).use { outputStream -> 
-                                                    IMGLYFileWriter(settingsList).writeJson(outputStream)
-                                                }
+                                                } ?: Uri.fromFile(
+                                                    File.createTempFile(
+                                                        "serialization-" + UUID.randomUUID()
+                                                            .toString(), ".json"
+                                                    )
+                                                )
+                                                Encoder.createOutputStream(uri)
+                                                    .use { outputStream ->
+                                                        IMGLYFileWriter(settingsList).writeJson(
+                                                            outputStream
+                                                        )
+                                                    }
                                                 uri.toString()
                                             }
                                             SerializationExportType.OBJECT -> {
                                                 ReactJSON.convertJsonToMap(
-                                                  JSONObject(
-                                                          IMGLYFileWriter(settingsList).writeJsonAsString()
-                                                  )
+                                                    JSONObject(
+                                                        IMGLYFileWriter(settingsList).writeJsonAsString()
+                                                    )
                                                 )
                                             }
                                         }
                                     }
-                                    settingsList.release()
                                 } ?: run {
-                                    Log.i("ImgLySdk", "You need to include 'backend:serializer' Module, to use serialisation!")
+                                    Log.i(
+                                        "ImgLySdk",
+                                        "You need to include 'backend:serializer' Module, to use serialisation!"
+                                    )
                                 }
                             }
 
-                            currentPromise?.resolve(
-                              reactMap(
-                                "video" to resultPath?.toString(),
-                                "hasChanges" to (sourcePath?.path != resultPath?.path),
-                                "serialization" to serialization
-                              )
+                            var segments: ReadableArray? = null
+                            val canvasSize = settingsList[LoadState::class].sourceSize
+                            val serializedSize = reactMap(
+                                "height" to canvasSize.height,
+                                "width" to canvasSize.width
                             )
+
+                            if (resolveManually) {
+                                settingsLists[currentEditorUID] = settingsList
+                                segments = serializeVideoSegments(settingsList)
+                            }
+
+                            currentPromise?.resolve(
+                                reactMap(
+                                    "video" to resultPath?.toString(),
+                                    "hasChanges" to (sourcePath?.path != resultPath?.path),
+                                    "serialization" to serialization,
+                                    "segments" to segments,
+                                    "identifier" to currentEditorUID,
+                                    "videoSize" to serializedSize
+                                )
+                            )
+                            if (!resolveManually) {
+                                settingsList.release()
+                            }
+                            resolveManually = false
                         }()
                     }
                 }
@@ -113,14 +160,17 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         }
     }
 
-
     override fun onNewIntent(intent: Intent?) {
     }
 
     @ReactMethod
     fun present(video: String, config: ReadableMap?, serialization: String?, promise: Promise) {
         val configuration = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf())
-        val settingsList = VideoEditorSettingsList(configuration.export?.serialization?.enabled == true)
+        val exportVideoSegments = config?.getMap("export")?.getMap("video")?.getBoolean("segments") == true
+        val createTemporaryFiles = configuration.export?.serialization?.enabled == true || exportVideoSegments
+        resolveManually = exportVideoSegments
+
+        val settingsList = VideoEditorSettingsList(createTemporaryFiles)
         configuration.applyOn(settingsList)
         currentConfig = configuration
         currentPromise = promise
@@ -135,30 +185,33 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
     @ReactMethod
     fun presentComposition(videos: ReadableArray, config: ReadableMap?, serialization: String?, size: ReadableMap?, promise: Promise) {
-        val array = videos.toArrayList()
-        val videoArray = array.filterIsInstance<String>().takeIf { it.size == array.size } ?: arrayListOf()
+        val videoArray = deserializeVideoParts(videos)
         var source = resolveSize(size)
 
         val configuration = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf())
-        val settingsList = VideoEditorSettingsList(configuration.export?.serialization?.enabled == true)
+
+        val exportVideoSegments = config?.getMap("export")?.getMap("video")?.getBoolean("segments") == true
+        val createTemporaryFiles = configuration.export?.serialization?.enabled == true || exportVideoSegments
+        resolveManually = exportVideoSegments
+
+        val settingsList = VideoEditorSettingsList(createTemporaryFiles)
         configuration.applyOn(settingsList)
         currentConfig = configuration
         currentPromise = promise
 
-        if (videoArray.count() > 0) {
+        if (videoArray.isNotEmpty()) {
             if (source == null) {
                 if (size != null) {
                     promise.reject("VESDK", "Invalid video size: width and height must be greater than zero.")
                     return
                 }
                 val video = videoArray.first()
-                source = retrieveURI(video)
+                source = video.videoSource.getSourceAsUri()
             }
 
             settingsList.configure<VideoCompositionSettings> { loadSettings ->
                 videoArray.forEach {
-                    val resolvedSource = retrieveURI(it)
-                    loadSettings.addCompositionPart(VideoCompositionSettings.VideoPart(resolvedSource))
+                    loadSettings.addCompositionPart(it)
                 }
             }
         } else {
@@ -174,6 +227,50 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
         readSerialisation(settingsList, serialization, false)
         startEditor(settingsList)
+    }
+
+    private fun serializeVideoSegments(settingsList: SettingsList): ReadableArray {
+        val compositionParts = WritableNativeArray()
+        settingsList[VideoCompositionSettings::class].videos.forEach {
+            val source = it.videoSource.getSourceAsUri().toString()
+            val trimStart = it.trimStartInNano / 1000000000.0f
+            val trimEnd = it.trimEndInNano / 1000000000.0f
+
+            val videoPart = reactMap(
+                "videoURI" to source,
+                "startTime" to trimStart.toDouble(),
+                "endTime" to trimEnd.toDouble()
+            )
+            compositionParts.pushMap(videoPart)
+        }
+        return compositionParts
+    }
+
+    private fun deserializeVideoParts(videos: ReadableArray) : List<VideoPart> {
+        val parts = emptyList<VideoPart>().toMutableList()
+
+        videos.toArrayList().forEach {
+            if (it is String) {
+                val videoPart = VideoPart(retrieveURI(it))
+                parts.add(videoPart)
+            } else if (it is Map<*, *>) {
+                val uri = it["videoURI"] as String?
+                val trimStart = it["startTime"] as Double?
+                val trimEnd = it["endTime"] as Double?
+
+                if (uri != null) {
+                    val videoPart = VideoPart(retrieveURI(uri))
+                    if (trimStart != null) {
+                        videoPart.trimStartInNanoseconds = (trimStart * 1000000000.0f).toLong()
+                    }
+                    if (trimEnd != null) {
+                        videoPart.trimEndInNanoseconds = (trimEnd * 1000000000.0f).toLong()
+                    }
+                    parts.add(videoPart)
+                }
+            }
+        }
+        return parts
     }
 
     private fun retrieveURI(source: String) : Uri {
@@ -211,6 +308,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
     private fun startEditor(settingsList: VideoEditorSettingsList?) {
         val currentActivity = this.currentActivity ?: throw RuntimeException("Can't start the Editor because there is no current activity")
+        currentEditorUID = UUID.randomUUID().toString()
         if (settingsList != null) {
             MainThreadRunnable {
                 VideoEditorBuilder(currentActivity)

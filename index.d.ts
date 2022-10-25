@@ -1,5 +1,5 @@
-import { Component } from 'react';
-import { AssetURI, Configuration } from './configuration';
+import { Component } from "react";
+import { AssetURI, Configuration } from "./configuration";
 
 /**
  * The result of an export.
@@ -11,6 +11,12 @@ interface VideoEditorResult {
   hasChanges: boolean;
   /** All modifications applied to the input video if `export.serialization.enabled` of the `Configuration` was set to `true`. */
   serialization?: string | object;
+  /** The used input video segments that compose the edited `video`. Returned if `export.video.segments` of the `Configuration` was set to `true`. */
+  segments?: [VideoSegment];
+  /** The size of the **untransformed** video. */
+  videoSize: Size;
+  /** Releases the result. Needed if `export.video.segments` of the `Configuration` was set to `true`. */
+  release?(): void;
 }
 
 /** An object that contains width and height values. */
@@ -21,18 +27,45 @@ interface Size {
   height: number;
 }
 
+/**
+ * A video segment with optional trimming.
+ *
+ * It is used to initialize the editor with a video composition and to retrieve the edited video composition on export.
+ * A video composition (edited asset) in combination with a serialization (edit model) can be used to restore the state of the editor.
+ */
+interface VideoSegment {
+  /**
+   * A URI for the video segment.
+   * @note Remote resources are not optimized and therefore should be downloaded
+   * in advance and then passed to the editor as local resources.
+   */
+  videoURI: AssetURI;
+  /**
+   * The start time in seconds.
+   * @example // Defaults to:
+   * null
+   */
+  startTime?: number;
+  /**
+   * The end time in seconds.
+   * @example // Defaults to:
+   * null
+   */
+  endTime?: number;
+}
+
 declare class VESDK {
   /**
    * Modally present a video editor.
    * @note Remote resources are not optimized and therefore should be downloaded
    * in advance and then passed to the editor as local resources.
    *
-   * @param {AssetURI | [AssetURI] | {uri: string}} video The source of the video to be edited.
-   * Can be either an URI (local only), an object with a member `uri`, or an asset reference
+   * @param {AssetURI | [AssetURI] | [VideoSegment] | {uri: string}} video The source of the video to be edited.
+   * Can be either a URI, an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
    *
    * For video compositions an array of video sources is accepted as input. If an empty array is
-   * passed to the editor `videoSize` must be set. You need to obtain a **valid license** for this 
+   * passed to the editor `videoSize` must be set. You need to obtain a **valid license** for this
    * feature to work.
    * @param {Configuration} configuration The configuration used to initialize the editor.
    * @param {object} serialization The serialization used to initialize the editor. This
@@ -41,16 +74,25 @@ declare class VESDK {
    * @param {Size} videoSize **Video composition only:** The size of the video in pixels that is about to be edited.
    * This overrides the natural dimensions of the video(s) passed to the editor. All videos will
    * be fitted to the `videoSize` aspect by adding black bars on the left and right side or top and bottom.
-   *
    * @return {Promise<VideoEditorResult | null>} Returns a `VideoEditorResult` or `null` if the editor
    * is dismissed without exporting the edited video.
    */
   static openEditor(
-    video: AssetURI | [AssetURI] | {uri: string},
+    video: AssetURI | [AssetURI] | [VideoSegment] | { uri: string },
     configuration?: Configuration,
     serialization?: object,
     videoSize?: Size
-  ): Promise<VideoEditorResult | null>
+  ): Promise<VideoEditorResult | null>;
+
+  /**
+   * Releases the result from the editor and deletes the temporary files.
+   * @note This function needs to be called in case `configuration.export.video.segments`
+   * is set to `true`.
+   *
+   * @param {string} identifier The identifier of the `VideoEditorResult` to release
+   * the temporary data of.
+   */
+  static releaseTemporaryData(identifier: string): void;
 
   /**
    * Unlock VideoEditor SDK with a license.
@@ -62,9 +104,7 @@ declare class VESDK {
    * and `vesdk_license.android.json` for the Android license file in order to get automatically
    * resolved by the packager.
    */
-  static unlockWithLicense(
-    license: string | object
-  ): void
+  static unlockWithLicense(license: string | object): void;
 }
 
 /**
@@ -78,17 +118,15 @@ interface VideoEditorModalProps {
 
   /**
    * This prop determines the source of the video to be edited.
-   * Can be either an URI (local only), an object with a member `uri`, or an asset reference
+   * Can be either a URI, an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
    * For video compositions an array of video sources is accepted as input. If an empty array is
    * passed to the editor `videoSize` must be set.
    *
-   * @note Edited videos from remote resources can be previewed in the editor but their export will
-   * fail! Remote video resources are currently supported for debugging purposes only, e.g., when
-   * loading videos with `require('./video.mp4')` for debug builds static video assets will be
-   * resolved to remote URLs served by the development packager.
+   * @note Remote resources are not optimized and therefore should be downloaded
+   * in advance and then passed to the editor as local resources.
    */
-  video: AssetURI | [AssetURI] | {uri: string};
+  video: AssetURI | [AssetURI] | [VideoSegment] | { uri: string };
 
   /**
    * This prop determines the configuration used to initialize the editor.
@@ -139,7 +177,11 @@ interface VideoEditorModalState {
 /**
  * A component that wraps the `VESDK.openEditor` function to modally present a video editor.
  */
-declare class VideoEditorModal extends Component<VideoEditorModalProps, VideoEditorModalState> {}
+declare class VideoEditorModal extends Component<
+  VideoEditorModalProps,
+  VideoEditorModalState
+> {}
 
+export * from "./configuration";
 export { VESDK, VideoEditorModal };
-export * from './configuration';
+

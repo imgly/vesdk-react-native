@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { NativeModules, Image, Platform } from 'react-native';
+import { Image, NativeModules, Platform } from 'react-native';
 import { Configuration } from './configuration';
 
 const { RNVideoEditorSDK } = NativeModules;
@@ -123,8 +123,8 @@ class VESDK {
    * @note Remote resources are not optimized and therefore should be downloaded
    * in advance and then passed to the editor as local resources.
    *
-   * @param {AssetURI | [AssetURI] | {uri: string}} video The source of the video to be edited.
-   * Can be either an URI (local only), an object with a member `uri`, or an asset reference
+   * @param {AssetURI | [AssetURI] | [VideoSegment] | {uri: string}} video The source of the video to be edited.
+   * Can be either a URI, an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
    *
    * For video compositions an array of video sources is accepted as input. If an empty array is
@@ -137,29 +137,59 @@ class VESDK {
    * @param {Size} videoSize **Video composition only:** The size of the video in pixels that is about to be edited.
    * This overrides the natural dimensions of the video(s) passed to the editor. All videos will
    * be fitted to the `videoSize` aspect by adding black bars on the left and right side or top and bottom.
-   *
    * @return {Promise<VideoEditorResult | null>} Returns a `VideoEditorResult` or `null` if the editor
    * is dismissed without exporting the edited video.
    */
-  static openEditor(video, configuration = null, serialization = null, videoSize = null) {
+  static async openEditor(video, configuration = null, serialization = null, videoSize = null) {
     resolveStaticAssets(configuration)
-      const videoDimensions = videoSize == null ? (Platform.OS == 'android' ? null : {height: 0, width: 0}) : videoSize;
-      const resolvedSerialization = Platform.OS == 'android' ? (serialization != null ? JSON.stringify(serialization) : null) : serialization;
-
+    const isAndroid = Platform.OS == 'android';
+      const videoDimensions = videoSize == null ? (isAndroid ? null : {height: 0, width: 0}) : videoSize;
+      const resolvedSerialization = isAndroid ? (serialization != null ? JSON.stringify(serialization) : null) : serialization;
+      var result = null;
+      var source = null;
+      
       if (Array.isArray(video)) {
-        var source = [];
+        source = [];
 
         video.forEach((videoClip) => {
-          source.push(resolveStaticAsset(videoClip, Platform.OS == 'android'));
+          if (videoClip.videoURI != null) {
+            const resolvedSource = resolveStaticAsset(videoClip.videoURI, isAndroid);
+            const resolvedVideo = {...videoClip};
+            resolvedVideo.videoURI = resolvedSource
+            source.push(resolvedVideo);
+          } else {
+            const resolvedSource = resolveStaticAsset(videoClip, isAndroid);
+            source.push(resolvedSource);
+          }
         });
-        return RNVideoEditorSDK.presentComposition(source, configuration, resolvedSerialization, videoDimensions);
+        if (isAndroid) {
+          result = await RNVideoEditorSDK.presentComposition(source, configuration, resolvedSerialization, videoDimensions);
+        } else {
+          result = await RNVideoEditorSDK.presentVideoSegments(source, configuration, resolvedSerialization, videoDimensions);
+        }
       } else {
         if (videoSize != null) {
           console.warn("Ignoring the video size. This parameter can only be used in combination with video compositions. If your license includes the video composition feature please wrap your video source into an array instead.")
         }
-        const resolvedVideo = resolveStaticAsset(video, Platform.OS == 'android');
-        return RNVideoEditorSDK.present(resolvedVideo, configuration, resolvedSerialization);
+        source = resolveStaticAsset(video, isAndroid);
+        result = await RNVideoEditorSDK.present(source, configuration, resolvedSerialization);
       }
+      const resolvedResult = {...result}
+
+      if (configuration.export.video.segments == true) {
+        const release = () => {
+          if (isAndroid) {
+            return RNVideoEditorSDK.releaseTemporaryData(result.identifier);
+          }
+          return;
+        }
+        resolvedResult.release = release;
+      } else {
+        delete resolvedResult.segments;
+      }
+      
+      delete resolvedResult.identifier;
+      return resolvedResult;
   }
 
   /**
@@ -212,5 +242,6 @@ class VideoEditorModal extends Component {
   }
 }
 
-export { VESDK, VideoEditorModal };
 export * from './configuration';
+export { VESDK, VideoEditorModal };
+

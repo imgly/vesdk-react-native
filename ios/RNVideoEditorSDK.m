@@ -40,6 +40,7 @@ static RNVESDKWillPresentBlock _willPresentVideoEditViewController = nil;
         resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
 {
   [self present:^PESDKMediaEditViewController * _Nullable(PESDKConfiguration * _Nonnull configuration, NSData * _Nullable serializationData) {
+    self.uuid = [[NSUUID new] UUIDString];
 
     PESDKPhotoEditModel *photoEditModel = [[PESDKPhotoEditModel alloc] init];
 
@@ -103,14 +104,22 @@ RCT_EXPORT_METHOD(present:(nonnull NSURLRequest *)request
                   reject:(RCTPromiseRejectBlock)reject)
 {
   // TODO: Handle React Native URLs from camera roll.
-  if (request.URL.isFileURL) {
-    if (![[NSFileManager defaultManager] fileExistsAtPath:request.URL.path]) {
-      reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
-      return;
-    }
+  if (![self isValidURL:request.URL]) {
+    reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
+    return;
   }
   PESDKVideo *video = [[PESDKVideo alloc] initWithURL:request.URL];
   [self present:video withConfiguration:configuration andSerialization:state resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(presentVideoSegments:(nonnull NSArray<NSDictionary *> *)requests
+                  configuration:(nullable NSDictionary *)configuration
+                  serialization:(nullable NSDictionary *)state
+                  videoSize:(CGSize)videoSize
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  [self openEditorFromVideos:requests videoSize:videoSize configuration:configuration serialization:state resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)requests
@@ -120,44 +129,101 @@ RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)request
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  NSMutableArray<AVAsset *> *assets = [NSMutableArray new];
+  [self openEditorFromVideos:requests videoSize:videoSize configuration:configuration serialization:state resolve:resolve reject:reject];
+}
 
-  if (requests.count > 0) {
-    for (NSURLRequest *request in requests) {
-      if (request.URL.isFileURL) {
-        if (![[NSFileManager defaultManager] fileExistsAtPath:request.URL.path]) {
+- (void)openEditorFromVideos:(nonnull NSArray *)videos videoSize:(CGSize)videoSize configuration:(nullable NSDictionary *)configuration serialization:(nullable NSDictionary *)state resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock) reject
+{
+  NSMutableArray<PESDKVideoSegment *> *segments = [NSMutableArray<PESDKVideoSegment *> new];
+
+  for (id video in videos) {
+    if ([video isKindOfClass:[NSURLRequest class]]) {
+      NSURLRequest *request = video;
+      if (![self isValidURL:request.URL]) {
+        reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
+        return;
+      }
+      PESDKVideoSegment *videoSegment = [[PESDKVideoSegment alloc] initWithURL:request.URL];
+      [segments addObject: videoSegment];
+    } else {
+      NSURLRequest *request = [RCTConvert NSURLRequest:video];
+      if (request == nil) {
+        // Segment.
+        NSURLRequest *segmentRequest = [RCTConvert NSURLRequest:[video valueForKey:@"videoURI"]];
+        NSNumber *startTime;
+        NSNumber *endTime;
+
+        id start = [video valueForKey:@"startTime"];
+        id end = [video valueForKey:@"endTime"];
+
+        if (![start isKindOfClass:[NSNull class]]) {
+          startTime = [RCTConvert NSNumber:start];
+        }
+        if (![end isKindOfClass:[NSNull class]]) {
+          endTime = [RCTConvert NSNumber:end];
+        }
+
+        if (![self isValidURL:segmentRequest.URL]) {
           reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
           return;
         }
+        PESDKVideoSegment *videoSegment = [[PESDKVideoSegment alloc] initWithURL:segmentRequest.URL startTime:startTime endTime:endTime];
+        [segments addObject: videoSegment];
+      } else {
+        if (![self isValidURL:request.URL]) {
+          reject(RN_IMGLY.kErrorUnableToLoad, @"File does not exist", nil);
+          return;
+        }
+        PESDKVideoSegment *videoSegment = [[PESDKVideoSegment alloc] initWithURL:request.URL];
+        [segments addObject: videoSegment];
       }
-
-      AVAsset *asset = [AVAsset assetWithURL:request.URL];
-      [assets addObject:asset];
     }
   }
 
   PESDKVideo *video;
 
   if (CGSizeEqualToSize(videoSize, CGSizeZero)) {
-    if (assets.count == 0) {
+    if (segments.count == 0) {
       RCTLogError(@"A video without assets must have a specific size.");
       reject(RN_IMGLY.kErrorUnableToLoad, @"The editor requires a valid size when initialized without a video.", nil);
       return;
     }
-    video = [[PESDKVideo alloc] initWithAssets:assets];
+    video = [[PESDKVideo alloc] initWithSegments:segments];
   } else {
     if (videoSize.height <= 0 || videoSize.width <= 0) {
       RCTLogError(@"Invalid video size: width and height must be greater than zero");
       reject(RN_IMGLY.kErrorUnableToLoad, @"Invalid video size: width and height must be greater than zero", nil);
       return;
     }
-    if (assets.count == 0) {
+    if (segments.count == 0) {
       video = [[PESDKVideo alloc] initWithSize:videoSize];
     }
-    video = [[PESDKVideo alloc] initWithAssets:assets size:videoSize];
+    video = [[PESDKVideo alloc] initWithSegments:segments size:videoSize];
   }
 
   [self present:video withConfiguration:configuration andSerialization:state resolve:resolve reject:reject];
+}
+
+- (BOOL)isValidURL:(nonnull NSURL*)url {
+  if (url.isFileURL) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:url.path]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+- (NSArray<NSDictionary *> *)serializeVideoSegments:(nonnull NSArray<PESDKVideoSegment *> *)segments {
+  NSMutableArray<NSDictionary *> *videoSegments = [NSMutableArray<NSDictionary *> new];
+  for (PESDKVideoSegment *segment in segments) {
+    NSDictionary *videoSegment = @{
+      @"videoURI": segment.url.absoluteString,
+      @"startTime": (segment.startTime != nil) ? segment.startTime : [NSNull null],
+      @"endTime": (segment.endTime != nil) ? segment.endTime : [NSNull null]
+    };
+    [videoSegments addObject: videoSegment];
+  }
+  return [videoSegments copy];
 }
 
 #pragma mark - PESDKVideoEditViewControllerDelegate
@@ -180,10 +246,20 @@ RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)request
 
   if (error == nil) {
     RCTPromiseResolveBlock resolve = self.resolve;
+    NSArray<NSDictionary *> *segments;
+
+    if (self.exportVideoSegments) {
+      segments = [self serializeVideoSegments:result.task.video.segments];
+    }
+
     [self dismiss:videoEditViewController animated:YES completion:^{
       resolve(@{ @"video": (result.output.url != nil) ? result.output.url.absoluteString : [NSNull null],
                  @"hasChanges": @(result.status == VESDKVideoEditorStatusRenderedWithChanges),
-                 @"serialization": (serialization != nil) ? serialization : [NSNull null] });
+                 @"serialization": (serialization != nil) ? serialization : [NSNull null],
+                 @"segments": (segments != nil) ? segments : [NSNull null],
+                 @"videoSize": @{@"height": @(result.task.video.size.height), @"width": @(result.task.video.size.height)},
+                 @"identifier": self.uuid
+              });
     }];
   } else {
     [self handleError:videoEditViewController code:RN_IMGLY.kErrorUnableToExport message:[NSString RN_IMGLY_string:@"Unable to export video or serialization." withError:error] error:error];

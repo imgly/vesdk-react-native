@@ -86,6 +86,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     id valueSerializationType = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.exportType" default:RN_IMGLY.kExportTypeFileURL];
     id valueSerializationFile = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.filename" default:valueExportFile];
     id valueSerializationEmbedImage = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.serialization.embedSourceImage" default:@(NO)];
+    id valueExportVideoSegments = [NSDictionary RN_IMGLY_dictionary:dictionary valueForKeyPath:@"export.video.segments" default:@(NO)];
 
     NSString *exportType = [RCTConvert NSString:valueExportType];
     NSURL *exportFile = [RCTConvert RN_IMGLY_ExportFileURL:valueExportFile withExpectedUTI:getUTI(configuration)];
@@ -93,6 +94,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     NSString *serializationType = [RCTConvert NSString:valueSerializationType];
     NSURL *serializationFile = [RCTConvert RN_IMGLY_ExportFileURL:valueSerializationFile withExpectedUTI:kUTTypeJSON];
     BOOL serializationEmbedImage = [RCTConvert BOOL:valueSerializationEmbedImage];
+    BOOL exportVideoSegments = [RCTConvert BOOL:valueExportVideoSegments];
 
     // Make sure that the export settings are valid
     if ((exportType == nil) ||
@@ -138,6 +140,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
     self.resolve = resolve;
     self.reject = reject;
     self.mediaEditViewController = mediaEditViewController;
+    self.exportVideoSegments = exportVideoSegments;
 
     UIViewController *currentViewController = RCTPresentedViewController();
     [currentViewController presentViewController:self.mediaEditViewController animated:YES completion:NULL];
@@ -159,6 +162,7 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
   self.resolve = nil;
   self.reject = nil;
   self.mediaEditViewController = nil;
+  self.exportVideoSegments = nil;
 
   dispatch_async(dispatch_get_main_queue(), ^{
     [mediaEditViewController.presentingViewController dismissViewControllerAnimated:animated completion:completion];
@@ -351,22 +355,22 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
 
 + (nullable RN_IMGLY_URLRequestArray *)RN_IMGLY_URLRequestArray:(nullable id)json
 {
-    NSArray *array = [RCTConvert NSArray:json];
-    NSMutableArray<NSURLRequest *> *requests = [NSMutableArray<NSURLRequest *> new];
-    if (array.count == 0) { return [requests copy]; }
-    for (id value in array) {
-        if (value == (id)[NSNull null]) {
-            RCTLogConvertError(json, @"a valid NSArray<NSURLRequest *>");
-            return nil;
-        }
-        NSURLRequest *request = [RCTConvert NSURLRequest:value];
-        if (request == nil) {
-            RCTLogConvertError(value, @"a valid NSURLRequest");
-            return nil;
-        }
-        [requests addObject:request];
+  NSArray *array = [RCTConvert NSArray:json];
+  NSMutableArray<NSURLRequest *> *requests = [NSMutableArray<NSURLRequest *> new];
+  if (array.count == 0) { return [requests copy]; }
+  for (id value in array) {
+    if (value == (id)[NSNull null]) {
+      RCTLogConvertError(json, @"a valid NSArray<NSURLRequest *>");
+      return nil;
     }
-    return [requests copy];
+    NSURLRequest *request = [RCTConvert NSURLRequest:value];
+    if (request == nil) {
+      RCTLogConvertError(value, @"a valid NSURLRequest");
+      return nil;
+    }
+    [requests addObject:request];
+  }
+  return [requests copy];
 }
 
 @end

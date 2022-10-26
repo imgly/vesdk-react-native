@@ -1,3 +1,11 @@
+## [2.16.1]
+
+### Fixed
+
+* [react-native-videoeditorsdk] Fixed error when cancelling the editor. 
+* [react-native-videoeditorsdk] Fixed missing export of `VideoSegment` type.
+* [react-native-videoeditorsdk] Fixed wrong types for `VESDK.openEditor`.
+
 ## [2.16.0]
 
 ### Added

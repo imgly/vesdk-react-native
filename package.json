@@ -1,7 +1,7 @@
 {
   "name": "react-native-videoeditorsdk",
   "title": "React Native module for VideoEditor SDK",
-  "version": "2.16.0",
+  "version": "2.16.1",
   "description": "A React Native module for VideoEditor SDK. Integrate the video editor into your own HTML5, iOS or Android app - in minutes!",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -35,6 +35,6 @@
     "react-native": ">=0.60.0 <1.0.x"
   },
   "dependencies": {
-    "react-native-imglysdk": "2.16.0"
+    "react-native-imglysdk": "2.16.1"
   }
 }

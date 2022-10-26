@@ -123,7 +123,7 @@ class VESDK {
    * @note Remote resources are not optimized and therefore should be downloaded
    * in advance and then passed to the editor as local resources.
    *
-   * @param {AssetURI | [AssetURI] | [VideoSegment] | {uri: string}} video The source of the video to be edited.
+   * @param {AssetURI | AssetURI[] | VideoSegment[] | {uri: string}} video The source of the video to be edited.
    * Can be either a URI, an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
    *
@@ -174,9 +174,9 @@ class VESDK {
         source = resolveStaticAsset(video, isAndroid);
         result = await RNVideoEditorSDK.present(source, configuration, resolvedSerialization);
       }
-      const resolvedResult = {...result}
-
-      if (configuration.export.video.segments == true) {
+      if (result == null) return null;
+      const resolvedResult = {...result};
+      if (configuration?.export?.video?.segments == true) {
         const release = () => {
           if (isAndroid) {
             return RNVideoEditorSDK.releaseTemporaryData(result.identifier);

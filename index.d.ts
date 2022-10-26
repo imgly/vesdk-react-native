@@ -60,7 +60,7 @@ declare class VESDK {
    * @note Remote resources are not optimized and therefore should be downloaded
    * in advance and then passed to the editor as local resources.
    *
-   * @param {AssetURI | [AssetURI] | [VideoSegment] | {uri: string}} video The source of the video to be edited.
+   * @param {AssetURI | AssetURI[] | VideoSegment[] | {uri: string}} video The source of the video to be edited.
    * Can be either a URI, an object with a member `uri`, or an asset reference
    * which can be optained by, e.g., `require('./video.mp4')` as `number`.
    *
@@ -78,7 +78,7 @@ declare class VESDK {
    * is dismissed without exporting the edited video.
    */
   static openEditor(
-    video: AssetURI | [AssetURI] | [VideoSegment] | { uri: string },
+    video: AssetURI | AssetURI[] | VideoSegment[] | { uri: string },
     configuration?: Configuration,
     serialization?: object,
     videoSize?: Size
@@ -183,5 +183,5 @@ declare class VideoEditorModal extends Component<
 > {}
 
 export * from "./configuration";
-export { VESDK, VideoEditorModal };
+export { VESDK, VideoEditorModal, VideoSegment };
 

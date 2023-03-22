@@ -60,6 +60,8 @@ typedef void (^IMGLYCompletionBlock)(void);
 @property (strong, atomic, nullable) RCTPromiseResolveBlock resolve;
 @property (strong, atomic, nullable) RCTPromiseRejectBlock reject;
 @property (strong, atomic, nullable) PESDKMediaEditViewController* mediaEditViewController;
+@property (atomic) BOOL exportVideoSegments;
+@property (strong, atomic, nullable) NSString* uuid;
 
 - (void)present:(nonnull IMGLYMediaEditViewControllerBlock)createMediaEditViewController withUTI:(nonnull IMGLYUTIBlock)getUTI
   configuration:(nullable NSDictionary *)dictionary serialization:(nullable NSDictionary *)state

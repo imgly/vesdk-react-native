@@ -1,3 +1,18 @@
+## [2.16.1]
+
+### Fixed
+
+* [react-native-videoeditorsdk] Fixed error when cancelling the editor. 
+* [react-native-videoeditorsdk] Fixed missing export of `VideoSegment` type.
+* [react-native-videoeditorsdk] Fixed wrong types for `VESDK.openEditor`.
+
+## [2.16.0]
+
+### Added
+
+* [react-native-videoeditorsdk] Added duration action for text and stickers.
+* [react-native-videoeditorsdk] Added `VideoEditorResult.segments`, `VideoEditorResult.videoSize`, and `VideoEditorResult.release()` which enable serialization of the individual video composition components if `configuration.export.video.segments` is enabled.
+
 ## [2.15.0]
 
 ### Changed

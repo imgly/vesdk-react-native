@@ -32,6 +32,7 @@ Check out our [video tutorial](https://img.ly/blog/a-photo-and-video-editor-for-
 With version `2.13.0`, we recommend using `compileSdkVersion` not lower than `31` for Android. However, this might interfere with your application's Android Gradle Plugin version if this is set to `4.x`.
 
 If you don't use a newer Android Gradle Plugin version, e.g., by updating at least to RN 0.68.0, you'll most likely encounter a build error similar to:
+
 ```
 FAILURE: Build failed with an exception.
 
@@ -44,9 +45,11 @@ Run with --stacktrace option to get the stack trace. Run with --info or --debug 
 
 * Get more help at https://help.gradle.org
 ```
+
 As a workaround you can create the following symlinks:
-  1. Inside `/Users/YOUR-USERNAME/Library/Android/sdk/build-tools/31.0.0/`: Create a `dx` symlink for the `d8` file with `ln -s d8 dx`.
-  2. From there, go to `./lib/` and create a `dx.jar` symlink for the `d8.jar` file with `ln -s d8.jar dx.jar`. 
+
+1. Inside `/Users/YOUR-USERNAME/Library/Android/sdk/build-tools/31.0.0/`: Create a `dx` symlink for the `d8` file with `ln -s d8 dx`.
+2. From there, go to `./lib/` and create a `dx.jar` symlink for the `d8.jar` file with `ln -s d8.jar dx.jar`.
 
 ### Expo CLI
 
@@ -63,7 +66,7 @@ In order to use this module with the Expo CLI you can make use of our integrated
    ```sh
    expo install react-native-videoeditorsdk
    ```
-   
+
    This will automatically install [`react-native-imglysdk`](https://npmjs.org/package/react-native-imglysdk) which you can use to configure your application with our Expo config plugin.
 
 2. Inside your app's `app.json` or `app.config.js` add our config plugin:
@@ -83,7 +86,7 @@ In order to use this module with the Expo CLI you can make use of our integrated
          "react-native-imglysdk",
          {
            "android": {
-             "version": "10.1.1",
+             "version": "10.4.0",
              "modules": [
                "ui:core",
                "ui:transform",
@@ -103,7 +106,7 @@ In order to use this module with the Expo CLI you can make use of our integrated
    ```
 
    For further information on the available modules, please refer to step 4 of the React Native CLI [Android](#android) guide below.
-   
+
    **Please note that the `react-native-imglysdk` module manages both VideoEditor SDK as well as PhotoEditor SDK so you only need to add the Expo config plugin once even when using both SDKs.**
 
 3. From version `2.15.0` the iOS deployment target needs to be set to at least iOS 13. You can use the `expo-build-properties` config plugin for this. Please refer to the [official Expo docs](https://docs.expo.dev/versions/v45.0.0/sdk/build-properties/).
@@ -149,6 +152,7 @@ For older React Native versions autolinking is not available and VideoEditor SDK
 #### Android
 
 1. Add the img.ly repository and plugin by opening the `android/build.gradle` file (**not** `android/app/build.gradle`) and adding these lines at the top:
+
    ```groovy
    buildscript {
        repositories {
@@ -157,11 +161,12 @@ For older React Native versions autolinking is not available and VideoEditor SDK
        }
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.32"
-           classpath 'ly.img.android.sdk:plugin:10.1.1'
+           classpath 'ly.img.android.sdk:plugin:10.4.0'
        }
    }
    ```
-   In order to update VideoEditor SDK for Android replace the version string `10.1.1` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+
+   In order to update VideoEditor SDK for Android replace the version string `10.4.0` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 2. Still in the `android/build.gradle` file (**not** `android/app/build.gradle`), add these lines at the bottom:
 
@@ -189,7 +194,8 @@ For older React Native versions autolinking is not available and VideoEditor SDK
    }
    ```
 
-4. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file  (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
+4. Configure VideoEditor SDK for Android by opening the `android/app/build.gradle` file (**not** `android/build.gradle`) and adding the following lines under `apply plugin: "com.android.application"`:
+
    ```groovy
    apply plugin: 'ly.img.android.sdk'
    apply plugin: 'kotlin-android'
@@ -237,25 +243,29 @@ For older React Native versions autolinking is not available and VideoEditor SDK
 Import the module in your `App.js`:
 
 ```js
-import {VESDK, VideoEditorModal, Configuration} from 'react-native-videoeditorsdk';
+import {
+  VESDK,
+  VideoEditorModal,
+  Configuration,
+} from "react-native-videoeditorsdk";
 ```
 
 Each platform requires a separate license file. [Unlock VideoEditor SDK](./index.d.ts#L41-L53) automatically for both platforms with a single line of code via [platform-specific file extensions](https://reactnative.dev/docs/platform-specific-code#platform-specific-extensions):
 
 ```js
-VESDK.unlockWithLicense(require('./vesdk_license'));
+VESDK.unlockWithLicense(require("./vesdk_license"));
 ```
 
 Open the editor with a video:
 
 ```js
-VESDK.openEditor(require('./video.mp4'));
+VESDK.openEditor(require("./video.mp4"));
 ```
 
 Or use the component to open the editor:
 
 ```jsx
-<VideoEditorModal visible={true} video={require('./video.mp4')}/>
+<VideoEditorModal visible={true} video={require("./video.mp4")} />
 ```
 
 Please see the [code documentation](./index.d.ts) for more details and additional [customization and configuration options](./configuration.ts).

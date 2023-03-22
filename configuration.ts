@@ -606,8 +606,9 @@ export interface Configuration {
     /**
      * Defines all allowed actions for the sticker tool menu. Only buttons for allowed actions are visible and shown in the given order.
      * @note The `StickerAction.REMOVE_BACKGROUND` action is only shown for personal and external (non-animated) stickers where a person could be detected. This feature is only supported on devices running iOS 15+.
+     * @note The `StickerAction.DURATION` action is only shown when editing videos.
      * @example // Defaults to:
-     * [StickerAction.REPLACE, StickerAction.OPACITY, StickerAction.COLOR, StickerAction.REMOVE_BACKGROUND]
+     * [StickerAction.DURATION, StickerAction.REPLACE, StickerAction.OPACITY, StickerAction.COLOR, StickerAction.REMOVE_BACKGROUND]
      */
     actions?: StickerAction[];
     /**
@@ -685,8 +686,9 @@ export interface Configuration {
     fonts?: (Font | ExistingItem)[];
     /**
      * Defines all allowed actions for the text tool menu. Only buttons for allowed actions are visible and shown in the given order.
+     * @note The `TextAction.DURATION` action is only shown when editing videos.
      * @example // Defaults to:
-     * [TextAction.FONT, TextAction.COLOR, TextAction.BACKGROUND_COLOR, TextAction.ALIGNMENT]
+     * [TextAction.DURATION, TextAction.FONT, TextAction.COLOR, TextAction.BACKGROUND_COLOR, TextAction.ALIGNMENT]
      */
     actions?: TextAction[];
     /**
@@ -1030,6 +1032,16 @@ export interface Configuration {
        * null
        */
       bitRate?: number | null;
+      /**
+       * Whether the video editor should include the video segments of the composition
+       * in the `VideoEditorResult`.
+       * @note If enabled, you need to release the result via `VideoEditorResult.release()`
+       * after processing the video segments in order to prevent memory leaks.
+       * 
+       * @example // Defaults to:
+       * false
+       */
+       segments?: boolean;
     }
     /**
      * The filename for the exported data if the `exportType` is not `ImageExportType.DATA_URL`.
@@ -1313,6 +1325,7 @@ export enum StickerAction {
   REPLACE = "replace",
   OPACITY = "opacity",
   REMOVE_BACKGROUND = "removebackground",
+  DURATION = "duration"
 }
 
 /** A text action. */
@@ -1321,6 +1334,7 @@ export enum TextAction {
   COLOR = "color",
   BACKGROUND_COLOR = "backgroundcolor",
   ALIGNMENT = "alignment",
+  DURATION = "duration"
 }
 
 /** A frame action. */

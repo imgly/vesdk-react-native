@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.annotation.WorkerThread
 import com.facebook.react.bridge.*
 import ly.img.android.IMGLY
 import ly.img.android.VESDK
 import ly.img.android.pesdk.VideoEditorSettingsList
+import ly.img.android.pesdk.backend.decoder.VideoSource
 import ly.img.android.pesdk.backend.model.state.LoadSettings
 import ly.img.android.pesdk.backend.model.state.manager.SettingsList
 import ly.img.android.pesdk.kotlin_extension.continueWithExceptions
@@ -23,8 +25,9 @@ import java.io.File
 import ly.img.android.pesdk.backend.encoder.Encoder
 import ly.img.android.pesdk.backend.model.EditorSDKResult
 import ly.img.android.pesdk.backend.model.VideoPart
-import ly.img.android.pesdk.backend.model.state.LoadState
 import ly.img.android.pesdk.backend.model.state.VideoCompositionSettings
+import ly.img.android.pesdk.backend.model.state.manager.StateHandler
+import ly.img.android.pesdk.ui.activity.VideoEditorActivity
 import ly.img.android.serializer._3.IMGLYFileReader
 import ly.img.android.serializer._3.IMGLYFileWriter
 import java.util.UUID
@@ -32,7 +35,13 @@ import java.util.UUID
 class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener {
     companion object {
         // This number must be unique. It is public to allow client code to change it if the same value is used elsewhere.
-        var EDITOR_RESULT_ID = 29065
+        @JvmField var EDITOR_RESULT_ID = 29065
+
+        /** A closure to modify a *VideoEditorSettingsList* before the editor is opened. */
+        @JvmField var editorWillOpenClosure: ((settingsList: VideoEditorSettingsList) -> Unit)? = null
+
+        /** A closure allowing access to the *StateHandler* before the editor is exporting. */
+        @JvmField var editorWillExportClosure: ((stateHandler: StateHandler) -> Unit)? = null
     }
 
     init {
@@ -62,9 +71,9 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
         val data = try {
-          intent?.let { EditorSDKResult(it) }
+            intent?.let { EditorSDKResult(it) }
         } catch (e: EditorSDKResult.NotAnImglyResultException) {
-          null
+            null
         } ?: return // If data is null the result is not from us.
 
         when (requestCode) {
@@ -128,10 +137,10 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                             }
 
                             var segments: ReadableArray? = null
-                            val canvasSize = settingsList[LoadState::class].sourceSize
+                            val canvasSize = sourcePath?.let { VideoSource.create(it).fetchFormatInfo()?.size }
                             val serializedSize = reactMap(
-                                "height" to canvasSize.height,
-                                "width" to canvasSize.width
+                                "height" to canvasSize?.height,
+                                "width" to canvasSize?.width
                             )
 
                             if (resolveManually) {
@@ -166,8 +175,9 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
     @ReactMethod
     fun present(video: String, config: ReadableMap?, serialization: String?, promise: Promise) {
         val configuration = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf())
-        val exportVideoSegments = config?.getMap("export")?.getMap("video")?.getBoolean("segments") == true
-        val createTemporaryFiles = configuration.export?.serialization?.enabled == true || exportVideoSegments
+        val serializationEnabled = configuration.export?.serialization?.enabled == true
+        val exportVideoSegments = configuration.export?.video?.segments == true
+        val createTemporaryFiles = serializationEnabled || exportVideoSegments
         resolveManually = exportVideoSegments
 
         val settingsList = VideoEditorSettingsList(createTemporaryFiles)
@@ -189,9 +199,9 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         var source = resolveSize(size)
 
         val configuration = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf())
-
-        val exportVideoSegments = config?.getMap("export")?.getMap("video")?.getBoolean("segments") == true
-        val createTemporaryFiles = configuration.export?.serialization?.enabled == true || exportVideoSegments
+        val serializationEnabled = configuration.export?.serialization?.enabled == true
+        val exportVideoSegments = configuration.export?.video?.segments == true
+        val createTemporaryFiles = serializationEnabled || exportVideoSegments
         resolveManually = exportVideoSegments
 
         val settingsList = VideoEditorSettingsList(createTemporaryFiles)
@@ -296,7 +306,9 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         return LoadSettings.compositionSource(width.toInt(), height.toInt(), 60)
     }
 
-    private fun readSerialisation(settingsList: SettingsList, serialization: String?, readImage: Boolean) {
+    private fun readSerialisation(settingsList: VideoEditorSettingsList, serialization: String?, readImage: Boolean) {
+        editorWillOpenClosure?.invoke(settingsList)
+
         if (serialization != null) {
             skipIfNotExists {
                 IMGLYFileReader(settingsList).also {
@@ -308,12 +320,13 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
 
     private fun startEditor(settingsList: VideoEditorSettingsList?) {
         val currentActivity = this.currentActivity ?: throw RuntimeException("Can't start the Editor because there is no current activity")
-        currentEditorUID = UUID.randomUUID().toString()
         if (settingsList != null) {
+            currentEditorUID = UUID.randomUUID().toString()
+
             MainThreadRunnable {
-                VideoEditorBuilder(currentActivity)
-                  .setSettingsList(settingsList)
-                  .startActivityForResult(currentActivity, EDITOR_RESULT_ID)
+                VideoEditorBuilder(currentActivity, RNVideoEditorSDKActivity::class.java)
+                    .setSettingsList(settingsList)
+                    .startActivityForResult(currentActivity, EDITOR_RESULT_ID)
                 settingsList.release()
             }()
         }
@@ -417,4 +430,14 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
     }
 
     override fun getName() = "RNVideoEditorSDK"
+}
+
+/** A *VideoEditorActivity* used for the native interfaces. */
+class RNVideoEditorSDKActivity: VideoEditorActivity() {
+    @WorkerThread
+    override fun onExportStart(stateHandler: StateHandler) {
+        RNVideoEditorSDKModule.editorWillExportClosure?.invoke(stateHandler)
+
+        super.onExportStart(stateHandler)
+    }
 }

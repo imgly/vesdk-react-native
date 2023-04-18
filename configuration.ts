@@ -25,6 +25,15 @@ export interface Configuration {
   forceCrop?: boolean;
 
   /**
+   * Controls if the editor is used in single tool mode.
+   * Prerequisite is that only one tool is in `tools`.
+   * 
+   * @example // Defaults to:
+   * true
+   */
+  singleToolMode?: boolean;
+
+  /**
    * Defines all allowed actions for the main screen that are displayed as overlay buttons on the canvas.
    * Only buttons for allowed actions are visible.
    * @note The `CanvasAction.REMOVE_BACKGROUND` action is only shown when editing photos where a person could be detected. This feature is only supported on devices running iOS 15+.

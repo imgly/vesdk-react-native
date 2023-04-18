@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'React'
   s.dependency 'React-RCTImage'
-  s.dependency 'VideoEditorSDK', '~> 11.3'
+  s.dependency 'VideoEditorSDK', '~> 11.4'
 end

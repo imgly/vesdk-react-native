@@ -86,7 +86,7 @@ In order to use this module with the Expo CLI you can make use of our integrated
          "react-native-imglysdk",
          {
            "android": {
-             "version": "10.4.0",
+             "version": "10.4.1",
              "modules": [
                "ui:core",
                "ui:transform",
@@ -161,12 +161,12 @@ For older React Native versions autolinking is not available and VideoEditor SDK
        }
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.32"
-           classpath 'ly.img.android.sdk:plugin:10.4.0'
+           classpath 'ly.img.android.sdk:plugin:10.4.1'
        }
    }
    ```
 
-   In order to update VideoEditor SDK for Android replace the version string `10.4.0` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   In order to update VideoEditor SDK for Android replace the version string `10.4.1` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 2. Still in the `android/build.gradle` file (**not** `android/app/build.gradle`), add these lines at the bottom:
 

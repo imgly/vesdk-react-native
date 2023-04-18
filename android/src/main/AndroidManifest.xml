@@ -8,6 +8,7 @@
             android:exported="false"
             android:enabled="false"
             android:name="ly.img.android.IMGLYAutoInit" />
+        <activity android:name=".RNVideoEditorSDKActivity" />
     </application>
 </manifest>
   

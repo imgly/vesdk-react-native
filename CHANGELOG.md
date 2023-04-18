@@ -1,3 +1,16 @@
+## [2.17.0]
+
+### Added
+
+* Added `configuration.singleToolMode` that skips main menu if only one tool is used.
+* [react-native-videoeditorsdk] Added `RNVideoEditorSDKModule.editorWillOpenClosure` and `RNVideoEditorSDKModule.editorWillExportClosure` which allow further native configuration on Android.
+* [react-native-photoeditorsdk] Added `RNPhotoEditorSDKModule.editorWillOpenClosure` and `RNPhotoEditorSDKModule.editorWillExportClosure` which allow further native configuration on Android.
+
+### Fixed
+
+* [react-native-videoeditorsdk] Fixed `VideoEditorResult.videoSize` would always be zero.
+* [react-native-videoeditorsdk] Fixed error when not setting `Configuration.export.video.segments`.
+
 ## [2.16.1]
 
 ### Fixed

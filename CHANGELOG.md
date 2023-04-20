@@ -1,3 +1,9 @@
+## [2.17.1]
+
+### Fixed
+
+* [react-native-imglysdk] Fixed wrong default SDK version for Android.
+
 ## [2.17.0]
 
 ### Added

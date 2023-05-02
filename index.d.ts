@@ -85,16 +85,6 @@ declare class VESDK {
   ): Promise<VideoEditorResult | null>;
 
   /**
-   * Releases the result from the editor and deletes the temporary files.
-   * @note This function needs to be called in case `configuration.export.video.segments`
-   * is set to `true`.
-   *
-   * @param {string} identifier The identifier of the `VideoEditorResult` to release
-   * the temporary data of.
-   */
-  static releaseTemporaryData(identifier: string): void;
-
-  /**
    * Unlock VideoEditor SDK with a license.
    *
    * @param {string | object} license The license used to unlock the SDK. Can be either an URI
@@ -104,7 +94,7 @@ declare class VESDK {
    * and `vesdk_license.android.json` for the Android license file in order to get automatically
    * resolved by the packager.
    */
-  static unlockWithLicense(license: string | object): void;
+  static unlockWithLicense(license: string | object): Promise<void>;
 }
 
 /**

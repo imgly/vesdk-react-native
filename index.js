@@ -204,9 +204,9 @@ class VESDK {
    */
   static unlockWithLicense(license) {
     if (Platform.OS == 'android') {
-      RNVideoEditorSDK.unlockWithLicense(JSON.stringify(license));
+      return RNVideoEditorSDK.unlockWithLicense(JSON.stringify(license));
     } else {
-      RNVideoEditorSDK.unlockWithLicense(license);
+      return RNVideoEditorSDK.unlockWithLicense(license);
     }
   }
 }

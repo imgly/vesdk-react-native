@@ -63,11 +63,6 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (self.licenseError != nil) {
-      reject(RN_IMGLY.kErrorUnableToUnlock, [NSString RN_IMGLY_string:@"Unable to unlock with license." withError:self.licenseError], self.licenseError);
-      return;
-    }
-
     PESDKAssetCatalog *assetCatalog = PESDKAssetCatalog.defaultItems;
     PESDKConfiguration *configuration = [[PESDKConfiguration alloc] initWithBuilder:^(PESDKConfigurationBuilder * _Nonnull builder) {
       builder.assetCatalog = assetCatalog;
@@ -169,34 +164,24 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
   });
 }
 
-- (void)handleLicenseError:(nullable NSError *)error
+- (void)handleLicenseError:(nullable NSError *)error resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject
 {
-  self.licenseError = nil;
   if (error != nil) {
-    if ([error.domain isEqualToString:@"ImglyKit.IMGLY.Error"]) {
-      switch (error.code) {
-        case 3:
-          RCTLogWarn(@"%@: %@", NSStringFromClass(self.class), error.localizedDescription);
-          break;
-        default:
-          self.licenseError = error;
-          RCTLogError(@"%@: %@", NSStringFromClass(self.class), error.localizedDescription);
-          break;
-      }
-    } else {
-      self.licenseError = error;
-      RCTLogError(@"Error while unlocking with license: %@", error);
-    }
+      reject(RN_IMGLY.kErrorUnableToUnlock, [NSString RN_IMGLY_string:@"Unable to unlock with license." withError:error], error);
+      return;
+  } else {
+      resolve(nil);
+      return;
   }
 }
 
-- (void)unlockWithLicenseURL:(nonnull NSURL *)url {}
+- (void)unlockWithLicenseURL:(nonnull NSURL *)url resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {}
 
-- (void)unlockWithLicenseString:(nonnull NSString *)string {}
+- (void)unlockWithLicenseString:(nonnull NSString *)string resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {}
 
-- (void)unlockWithLicenseObject:(nonnull NSDictionary *)dictionary {}
+- (void)unlockWithLicenseObject:(nonnull NSDictionary *)dictionary resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {}
 
-- (void)unlockWithLicense:(nonnull id)json
+- (void)unlockWithLicense:(nonnull id)json resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject
 {
   NSString *string = nil;
   NSURL *url = nil;
@@ -222,14 +207,14 @@ const struct RN_IMGLY_Constants RN_IMGLY = {
   }
 
   if (url != nil) {
-    [self unlockWithLicenseURL:url];
+    [self unlockWithLicenseURL:url resolve:resolve reject:reject];
   }
   else if (string != nil) {
-    [self unlockWithLicenseString:string];
+    [self unlockWithLicenseString:string resolve:resolve reject:reject];
   }
   else if ([json isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dictionary = json;
-    [self unlockWithLicenseObject:dictionary];
+    [self unlockWithLicenseObject:dictionary resolve:resolve reject:reject];
   }
   else if (json) {
     RCTLogConvertError(json, @"a valid license format");

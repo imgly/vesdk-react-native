@@ -50,7 +50,6 @@ typedef void (^IMGLYCompletionBlock)(void);
 
 @property (class, strong, atomic, nullable) IMGLYConfigurationBlock configureWithBuilder;
 
-@property (strong, atomic, nullable) NSError* licenseError;
 @property (strong, atomic, nullable) NSString* exportType;
 @property (strong, atomic, nullable) NSURL* exportFile;
 @property (atomic) BOOL serializationEnabled;
@@ -68,11 +67,11 @@ typedef void (^IMGLYCompletionBlock)(void);
         resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject;
 
 - (void)dismiss:(nullable PESDKMediaEditViewController *)mediaEditViewController animated:(BOOL)animated completion:(nullable IMGLYCompletionBlock)completion;
-- (void)handleLicenseError:(nullable NSError *)error;
-- (void)unlockWithLicenseURL:(nonnull NSURL *)url;
-- (void)unlockWithLicenseString:(nonnull NSString *)string;
-- (void)unlockWithLicenseObject:(nonnull NSDictionary *)dictionary;
-- (void)unlockWithLicense:(nonnull id)json;
+- (void)handleLicenseError:(nullable NSError *)error resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject;
+- (void)unlockWithLicenseURL:(nonnull NSURL *)url resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject;
+- (void)unlockWithLicenseString:(nonnull NSString *)string resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject;
+- (void)unlockWithLicenseObject:(nonnull NSDictionary *)dictionary resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject;
+- (void)unlockWithLicense:(nonnull id)json resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject;
 
 extern const struct RN_IMGLY_Constants
 {

@@ -65,36 +65,36 @@ static RNVESDKWillPresentBlock _willPresentVideoEditViewController = nil;
   } configuration:dictionary serialization:state resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(unlockWithLicenseURL:(nonnull NSURL *)url)
+RCT_EXPORT_METHOD(unlockWithLicenseURL:(nonnull NSURL *)url resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     NSError *error = nil;
     [VESDK unlockWithLicenseFromURL:url error:&error];
-    [self handleLicenseError:error];
+    [self handleLicenseError:error resolve:resolve reject:reject];
   });
 }
 
-RCT_EXPORT_METHOD(unlockWithLicenseString:(nonnull NSString *)string)
+RCT_EXPORT_METHOD(unlockWithLicenseString:(nonnull NSString *)string resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     NSError *error = nil;
     [VESDK unlockWithLicenseFromString:string error:&error];
-    [self handleLicenseError:error];
+    [self handleLicenseError:error resolve:resolve reject:reject];
   });
 }
 
-RCT_EXPORT_METHOD(unlockWithLicenseObject:(nonnull NSDictionary *)dictionary)
+RCT_EXPORT_METHOD(unlockWithLicenseObject:(nonnull NSDictionary *)dictionary resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     NSError *error = nil;
     [VESDK unlockWithLicenseFromDictionary:dictionary error:&error];
-    [self handleLicenseError:error];
+    [self handleLicenseError:error resolve:resolve reject:reject];
   });
 }
 
-RCT_EXPORT_METHOD(unlockWithLicense:(nonnull id)json)
+RCT_EXPORT_METHOD(unlockWithLicense:(nonnull id)json resolve:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject)
 {
-  [super unlockWithLicense:json];
+  [super unlockWithLicense:json resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(present:(nonnull NSURLRequest *)request

@@ -1,3 +1,15 @@
+## [3.0.0]
+
+### Changed
+
+* Changed and aligned the error codes for the modules.
+* [react-native-videoeditorsdk] Unlocking the SDK via `VESDK.unlockWithLicense` now returns a `Promise<void>`.
+* [react-native-photoeditorsdk] Unlocking the SDK via `PESDK.unlockWithLicense` now returns a `Promise<void>`.
+
+### Fixed
+
+* [react-native-videoeditorsdk] Fixed unused types exports.
+
 ## [2.17.1]
 
 ### Fixed

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.facebook.react.bridge.*
+import ly.img.android.AuthorizationException
 import ly.img.android.IMGLY
 import ly.img.android.VESDK
 import ly.img.android.pesdk.VideoEditorSettingsList
@@ -48,6 +49,12 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         reactContext.addActivityEventListener(this)
     }
 
+    /** IMGLY constants for the plugin use. */
+    object IMGLYConstants {
+        const val K_ERROR_UNABLE_TO_UNLOCK = "E_UNABLE_TO_UNLOCK"
+        const val K_ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD"
+    }
+
     private var currentPromise: Promise? = null
     private var currentConfig: Configuration? = null
     private var resolveManually: Boolean = false
@@ -55,9 +62,15 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
     private var settingsLists: MutableMap<String, SettingsList> = mutableMapOf()
 
     @ReactMethod
-    fun unlockWithLicense(license: String) {
-        VESDK.initSDKWithLicenseData(license)
-        IMGLY.authorize()
+    fun unlockWithLicense(license: String, promise: Promise) {
+        try {
+            VESDK.initSDKWithLicenseData(license)
+            IMGLY.authorize()
+            promise.resolve(null)
+        } catch (e: AuthorizationException) {
+            promise.reject(IMGLYConstants.K_ERROR_UNABLE_TO_UNLOCK, "Unlocking the SDK failed due to: ${e.message}.")
+        }
+
     }
 
     @ReactMethod
@@ -212,7 +225,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         if (videoArray.isNotEmpty()) {
             if (source == null) {
                 if (size != null) {
-                    promise.reject("VESDK", "Invalid video size: width and height must be greater than zero.")
+                    promise.reject(IMGLYConstants.K_ERROR_UNABLE_TO_LOAD, "Invalid video size: width and height must be greater than zero.")
                     return
                 }
                 val video = videoArray.first()
@@ -226,7 +239,7 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
             }
         } else {
             if (source == null) {
-                promise.reject("VESDK", "The editor requires a valid size when initialized without a video.")
+                promise.reject(IMGLYConstants.K_ERROR_UNABLE_TO_LOAD, "The editor requires a valid size when initialized without a video.")
                 return
             }
         }

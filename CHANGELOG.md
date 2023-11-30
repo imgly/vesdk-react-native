@@ -1,3 +1,9 @@
+## [3.1.0]
+
+### Added
+
+* Added support for Expo 49. (#1811)
+
 ## [3.0.0]
 
 ### Changed

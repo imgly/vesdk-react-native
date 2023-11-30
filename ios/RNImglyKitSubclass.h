@@ -39,7 +39,8 @@
 #define RN_IMGLY_dictionary_HELPER(prefix) RN_IMGLY_CONCATENATE(prefix, _dictionary)
 #define RN_IMGLY_dictionary RN_IMGLY_dictionary_HELPER(RN_IMGLY)
 
-@import ImglyKit;
+#import <ImglyKit/ImglyKit.h>
+#import <ImglyKit/ImglyKit-Swift.h>
 
 @interface RN_IMGLY_ImglyKit ()
 

@@ -1,3 +1,24 @@
+## [3.2.0]
+
+### Changed
+
+* [react-native-imglysdk] Updated `@expo/config-plugins` dependency to `7.2`.
+* [react-native-photoeditorsdk] Raised minimum PhotoEditor SDK for iOS version to 11.9.0.
+* [react-native-photoeditorsdk] Raised minimum PhotoEditor SDK for Android version to 10.9.0. See the [migration guide](https://img.ly/docs/pesdk/react-native/getting-started/migration-guides/3-2-0/) for more information.
+* [react-native-videoeditorsdk] Raised minimum VideoEditor SDK for iOS version to 11.9.0.
+* [react-native-videoeditorsdk] Raised minimum VideoEditor SDK for Android version to 10.9.0. See the [migration guide](https://img.ly/docs/vesdk/react-native/getting-started/migration-guides/3-2-0/) for more information.
+
+### Added
+
+* [react-native-imglysdk] Added `kspVersion` parameter.
+* [react-native-videoeditorsdk] Added `VideoEditorResult` to types export.
+* [react-native-photoeditorsdk] Added `PhotoEditorResult` to types export.
+
+### Fixed
+
+* Fixed compiling issues when using native customizations on iOS.
+* Fixed potential crash on Android: `IllegalStateException "You need to use a Theme.AppCompat theme (or descendant) with this activity."`.
+
 ## [3.1.0]
 
 ### Added
@@ -117,7 +138,7 @@
 
 ### Changed
 
-* 🚨 The img.ly maven repository is no longer automatically added to your project by the plugin for Android. Please refer to the new step 3 in the [getting started](https://github.com/imgly/vesdk-react-native#android) section of the README for instructions on how to add it.
+* 🚨 The IMG.LY maven repository is no longer automatically added to your project by the plugin for Android. Please refer to the new step 3 in the [getting started](https://github.com/imgly/vesdk-react-native#android) section of the README for instructions on how to add it.
 * [react-native-videoeditorsdk] Added support for VideoEditor SDK for Android version 9.
 * [react-native-photoeditorsdk] Added support for PhotoEditor SDK for Android version 9.
 

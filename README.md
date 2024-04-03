@@ -27,30 +27,6 @@ Check out our [video tutorial](https://img.ly/blog/a-photo-and-video-editor-for-
 
 ## Getting started
 
-### Known Issues
-
-With version `2.13.0`, we recommend using `compileSdkVersion` not lower than `31` for Android. However, this might interfere with your application's Android Gradle Plugin version if this is set to `4.x`.
-
-If you don't use a newer Android Gradle Plugin version, e.g., by updating at least to RN 0.68.0, you'll most likely encounter a build error similar to:
-
-```
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-A problem occurred configuring project ':react-native-videoeditorsdk'.
-> com.android.builder.errors.EvalIssueException: Installed Build Tools revision 31.0.0 is corrupted. Remove and install again using the SDK Manager.
-
-* Try:
-Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
-
-* Get more help at https://help.gradle.org
-```
-
-As a workaround you can create the following symlinks:
-
-1. Inside `/Users/YOUR-USERNAME/Library/Android/sdk/build-tools/31.0.0/`: Create a `dx` symlink for the `d8` file with `ln -s d8 dx`.
-2. From there, go to `./lib/` and create a `dx.jar` symlink for the `d8.jar` file with `ln -s d8.jar dx.jar`.
-
 ### Expo CLI
 
 #### Limitations
@@ -77,7 +53,9 @@ In order to use this module with the Expo CLI you can make use of our integrated
    }
    ```
 
-   If needed, you can also use a specific version of our native library for Android as well as define explicitly the included modules. By default, all modules for both PhotoEditor SDK and VideoEditor SDK are included. Furthermore, you can configure the `buildToolsVersion`, `minSdkVersion`, `compileSdkVersion`, `targetSdkVersion`, and `kotlinGradlePluginVersion`.
+   If needed, you can also use a specific version of our native library for Android as well as define explicitly the included modules. By default, all modules for both PhotoEditor SDK and VideoEditor SDK are included. Further, you can alternate the KSP version with the `kspVersion` parameter based on the Kotlin version you are using. Please take a look [here](#android) on further details.
+   
+   For Expo version < 45, you can configure the `buildToolsVersion`, `minSdkVersion`, `compileSdkVersion`, `targetSdkVersion`, and `kotlinGradlePluginVersion`. From version 45+ we recommend setting these properties using the `expo-build-properties` config plugin directly.
 
    ```json
    {
@@ -86,18 +64,19 @@ In order to use this module with the Expo CLI you can make use of our integrated
          "react-native-imglysdk",
          {
            "android": {
-             "version": "10.4.1",
+             "version": "10.9.0",
+             "kspVersion": "1.8.0-1.0.9",
              "modules": [
                "ui:core",
                "ui:transform",
                "ui:filter",
                "assets:filter-basic"
              ],
-             "buildToolsVersion": "31.0.0",
+             "buildToolsVersion": "34.0.0",
              "minSdkVersion": "21",
-             "compileSdkVersion": "31",
-             "targetSdkVersion": "30",
-             "kotlinGradlePluginVersion": "1.5.32"
+             "compileSdkVersion": "34",
+             "targetSdkVersion": "34",
+             "kotlinGradlePluginVersion": "1.8.0"
            }
          }
        ]
@@ -151,7 +130,7 @@ For older React Native versions autolinking is not available and VideoEditor SDK
 
 #### Android
 
-1. Add the img.ly repository and plugin by opening the `android/build.gradle` file (**not** `android/app/build.gradle`) and adding these lines at the top:
+1. Add the IMG.LY repository and plugin by opening the `android/build.gradle` file (**not** `android/app/build.gradle`) and adding these lines at the top:
 
    ```groovy
    buildscript {
@@ -160,13 +139,16 @@ For older React Native versions autolinking is not available and VideoEditor SDK
            maven { url "https://artifactory.img.ly/artifactory/imgly" }
        }
        dependencies {
-           classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.32"
-           classpath 'ly.img.android.sdk:plugin:10.4.1'
+           classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
+           classpath 'com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.8.0-1.0.9' // KSP version is depending on your Kotlin version.
+           classpath 'ly.img.android.sdk:plugin:10.9.0'
        }
    }
    ```
 
-   In order to update VideoEditor SDK for Android replace the version string `10.4.1` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   The KSP version depends on the Kotlin version that you are using. In order to find the correct version, please visit the [official KSP release page](https://github.com/google/ksp/releases?page=1).
+
+   In order to update VideoEditor SDK for Android replace the version string `10.9.0` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 2. Still in the `android/build.gradle` file (**not** `android/app/build.gradle`), add these lines at the bottom:
 
@@ -178,18 +160,18 @@ For older React Native versions autolinking is not available and VideoEditor SDK
    }
    ```
 
-3. In the same file, you will need to modify the `minSdkVersion` to at least `21`. We also recommend to update the `buildToolsVersion` to `31.0.0` or higher as well as the `compileSdkVersion` to `31` or higher:
+3. In the same file, you will need to modify the `minSdkVersion` to at least `21`. We also recommend to update the `buildToolsVersion` to `34.0.0` or higher as well as the `compileSdkVersion` to `34` or higher but this is not mandatory:
 
    ```diff
    buildscript {
        ext {
    -       buildToolsVersion = "30.0.2"
-   +       buildToolsVersion = "31.0.0"
+   +       buildToolsVersion = "34.0.0"
    -       minSdkVersion = 19
    +       minSdkVersion = 21
-   -       compileSdkVersion = 30
-   +       compileSdkVersion = 31
-           targetSdkVersion = 30
+   -       compileSdkVersion = 34
+   +       compileSdkVersion = 34
+           targetSdkVersion = 34
        }
    }
    ```
@@ -201,7 +183,7 @@ For older React Native versions autolinking is not available and VideoEditor SDK
    apply plugin: 'kotlin-android'
 
    // Comment out the modules you don't need, to save size.
-   imglyConfig {
+   IMGLY.configure {
        modules {
            include 'ui:text'
            include 'ui:focus'

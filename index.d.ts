@@ -173,5 +173,5 @@ declare class VideoEditorModal extends Component<
 > {}
 
 export * from "./configuration";
-export { VESDK, VideoEditorModal, VideoSegment };
+export { VESDK, VideoEditorModal, VideoEditorResult, VideoSegment };
 

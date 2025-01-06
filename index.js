@@ -203,11 +203,7 @@ class VESDK {
    * resolved by the packager.
    */
   static unlockWithLicense(license) {
-    if (Platform.OS == 'android') {
-      return RNVideoEditorSDK.unlockWithLicense(JSON.stringify(license));
-    } else {
-      return RNVideoEditorSDK.unlockWithLicense(license);
-    }
+    return RNVideoEditorSDK.unlockWithLicense(JSON.stringify(license));
   }
 }
 

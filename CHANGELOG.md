@@ -1,3 +1,13 @@
+## [3.3.0]
+
+### Changed
+
+* [react-native-imglysdk] Removed `@expo/config-plugins` dependency.
+
+### Fixed
+
+* Fixed potential crash from `unlockWithLicense` if new architecture is enabled.
+
 ## [3.2.0]
 
 ### Changed

@@ -72,11 +72,11 @@ In order to use this module with the Expo CLI you can make use of our integrated
                "ui:filter",
                "assets:filter-basic"
              ],
-             "buildToolsVersion": "34.0.0",
+             "buildToolsVersion": "35.0.0",
              "minSdkVersion": "21",
-             "compileSdkVersion": "34",
-             "targetSdkVersion": "34",
-             "kotlinGradlePluginVersion": "1.8.0"
+             "compileSdkVersion": "35",
+             "targetSdkVersion": "35",
+             "kotlinGradlePluginVersion": "2.1.0"
            }
          }
        ]
@@ -139,8 +139,8 @@ For older React Native versions autolinking is not available and VideoEditor SDK
            maven { url "https://artifactory.img.ly/artifactory/imgly" }
        }
        dependencies {
-           classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
-           classpath 'com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.8.0-1.0.9' // KSP version is depending on your Kotlin version.
+           classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0"
+           classpath 'com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.1.0-1.0.28' // KSP version is depending on your Kotlin version.
            classpath 'ly.img.android.sdk:plugin:10.9.0'
        }
    }
@@ -160,18 +160,18 @@ For older React Native versions autolinking is not available and VideoEditor SDK
    }
    ```
 
-3. In the same file, you will need to modify the `minSdkVersion` to at least `21`. We also recommend to update the `buildToolsVersion` to `34.0.0` or higher as well as the `compileSdkVersion` to `34` or higher but this is not mandatory:
+3. In the same file, you will need to modify the `minSdkVersion` to at least `21`. We also recommend to update the `buildToolsVersion` to `35.0.0` or higher as well as the `compileSdkVersion` to `35` or higher but this is not mandatory:
 
    ```diff
    buildscript {
        ext {
    -       buildToolsVersion = "30.0.2"
-   +       buildToolsVersion = "34.0.0"
+   +       buildToolsVersion = "35.0.0"
    -       minSdkVersion = 19
    +       minSdkVersion = 21
-   -       compileSdkVersion = 34
-   +       compileSdkVersion = 34
-           targetSdkVersion = 34
+   -       compileSdkVersion = 30
+   +       compileSdkVersion = 35
+           targetSdkVersion = 35
        }
    }
    ```

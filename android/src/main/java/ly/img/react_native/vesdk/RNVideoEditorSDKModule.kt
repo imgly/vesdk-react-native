@@ -182,12 +182,14 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
     }
 
     @ReactMethod
     fun present(video: String, config: ReadableMap?, serialization: String?, promise: Promise) {
-        val configuration = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf())
+        val rawConfig: Map<String, Any?> = config?.toHashMap() ?: emptyMap()
+        val cleanConfig: Map<String, Any> = rawConfig.filterValues { it != null }.mapValues { it.value as Any }
+        val configuration = ConfigLoader.readFrom(cleanConfig)
         val serializationEnabled = configuration.export?.serialization?.enabled == true
         val exportVideoSegments = configuration.export?.video?.segments == true
         val createTemporaryFiles = serializationEnabled || exportVideoSegments
@@ -211,7 +213,12 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
         val videoArray = deserializeVideoParts(videos)
         var source = resolveSize(size)
 
-        val configuration = ConfigLoader.readFrom(config?.toHashMap() ?: mapOf())
+        val rawConfig: Map<String, Any?> = config?.toHashMap() ?: emptyMap()
+        val cleanConfig: MutableMap<String, Any> = mutableMapOf()
+        for ((key, value) in rawConfig) {
+            if (value != null) cleanConfig[key] = value
+        }
+        val configuration = ConfigLoader.readFrom(cleanConfig)
         val serializationEnabled = configuration.export?.serialization?.enabled == true
         val exportVideoSegments = configuration.export?.video?.segments == true
         val createTemporaryFiles = serializationEnabled || exportVideoSegments

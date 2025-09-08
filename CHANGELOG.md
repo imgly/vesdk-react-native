@@ -1,3 +1,13 @@
+## [3.4.0]
+
+### Changed
+
+* [react-native-photoeditorsdk] Raised minimum PhotoEditor Build SDK for Android version to 35
+* [react-native-photoeditorsdk] Raised Kotlin version to 2.1 and KSP to 2.1.0-1.0.28
+* [react-native-videoeditorsdk] Raised minimum PhotoEditor Build SDK for Android version to 35
+* [react-native-videoeditorsdk] Raised Kotlin version to 2.1 and KSP to 2.1.0-1.0.28
+
+
 ## [3.3.0]
 
 ### Changed

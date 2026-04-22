@@ -13,7 +13,7 @@ interface VideoEditorResult {
   serialization?: string | object;
   /** The used input video segments that compose the edited `video`. Returned if `export.video.segments` of the `Configuration` was set to `true`. */
   segments?: [VideoSegment];
-  /** The size of the **untransformed** video. */
+  /** The size of the **transformed** video after cropping. */
   videoSize: Size;
   /** Releases the result. Needed if `export.video.segments` of the `Configuration` was set to `true`. */
   release?(): void;

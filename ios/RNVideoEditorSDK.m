@@ -257,7 +257,7 @@ RCT_EXPORT_METHOD(presentComposition:(nonnull RN_IMGLY_URLRequestArray *)request
                  @"hasChanges": @(result.status == VESDKVideoEditorStatusRenderedWithChanges),
                  @"serialization": (serialization != nil) ? serialization : [NSNull null],
                  @"segments": (segments != nil) ? segments : [NSNull null],
-                 @"videoSize": @{@"height": @(result.task.video.size.height), @"width": @(result.task.video.size.height)},
+                 @"videoSize": @{@"height": @(result.task.video.size.height), @"width": @(result.task.video.size.width)},
                  @"identifier": self.uuid
               });
     }];

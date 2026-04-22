@@ -161,6 +161,15 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                                 segments = serializeVideoSegments(settingsList)
                             }
 
+                            // Sicherer Umgang mit Result-Dimensionen: auf ursprüngliche Größe zurückfallen
+                            var resultW = 0
+                            var resultH = 0
+                            try { resultW = data.resultWidth } catch (_: Exception) {}
+                            try { resultH = data.resultHeight } catch (_: Exception) {}
+
+                            val width = if (resultW > 0) resultW else (canvasSize?.width ?: 0)
+                            val height = if (resultH > 0) resultH else (canvasSize?.height ?: 0)
+
                             currentPromise?.resolve(
                                 reactMap(
                                     "video" to resultPath?.toString(),
@@ -168,7 +177,10 @@ class RNVideoEditorSDKModule(reactContext: ReactApplicationContext) : ReactConte
                                     "serialization" to serialization,
                                     "segments" to segments,
                                     "identifier" to currentEditorUID,
-                                    "videoSize" to serializedSize
+                                    "videoSize" to reactMap(
+                                        "width" to width,
+                                        "height" to height
+                                    )
                                 )
                             )
                             if (!resolveManually) {

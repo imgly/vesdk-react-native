@@ -64,7 +64,7 @@ In order to use this module with the Expo CLI you can make use of our integrated
          "react-native-imglysdk",
          {
            "android": {
-             "version": "10.9.0",
+            "version": "10.10.6",
              "kspVersion": "1.8.0-1.0.9",
              "modules": [
                "ui:core",
@@ -141,14 +141,14 @@ For older React Native versions autolinking is not available and VideoEditor SDK
        dependencies {
            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0"
            classpath 'com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.1.0-1.0.28' // KSP version is depending on your Kotlin version.
-           classpath 'ly.img.android.sdk:plugin:10.9.0'
+          classpath 'ly.img.android.sdk:plugin:10.10.6'
        }
    }
    ```
 
    The KSP version depends on the Kotlin version that you are using. In order to find the correct version, please visit the [official KSP release page](https://github.com/google/ksp/releases?page=1).
 
-   In order to update VideoEditor SDK for Android replace the version string `10.9.0` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
+   In order to update VideoEditor SDK for Android replace the version string `10.10.6` with a [newer release](https://github.com/imgly/vesdk-android-demo/releases).
 
 2. Still in the `android/build.gradle` file (**not** `android/app/build.gradle`), add these lines at the bottom:
 
